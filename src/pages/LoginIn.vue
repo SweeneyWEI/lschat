@@ -14,7 +14,7 @@
                               @keyup.enter.native="handleLoginIn"></el-input>
                 </el-form-item>
                 <div class="login-btn">
-                    <!--<el-button @click="goSignUp()">注册</el-button>-->
+                    <el-button  @click="goSignUp()">注册</el-button>
                     <el-button type="primary" @click="handleLoginIn">登录</el-button>
                 </div>
             </el-form>
@@ -26,6 +26,7 @@
   // import { mixin } from '../mixins'
   import LoginLogo from "../components/LoginLogo";
   import { loginIn } from "../api/index";
+  import { mixin } from "../mixins";
 
   //每个文件中只能有一个export default，对外暴露import获取
   export default {
@@ -35,7 +36,7 @@
     },
 
     //mixins 公用方法或组建供引用
-    // mixins: [mixin],
+    mixins: [mixin],
 
     //data在vue框架中位置不一样，用法也不一样。简单地说，在实例中data是一个对象，在组件中data就得是函数返回对象。
     data: function() {
@@ -80,9 +81,9 @@
       // changeIndex (value) {
       //   this.$store.commit('setActiveName', value)
       // },
-      handleLoginIn() {
-        let _this = this;
-        let params = new URLSearchParams();
+  handleLoginIn() {
+    let _this = this;
+    let params = new URLSearchParams();
         params.append("phoneOrEmail", this.loginForm.phoneOrEmail);
         params.append("password", this.loginForm.password);
 
@@ -93,44 +94,36 @@
 
         loginIn(userdata)
           .then(res => {
-            // console.log('-----------获取登录信息---------------')
             if (res.code === 0) {
-              _this.$message({
+              this.$message({
                 message: "登录成功",
                 type: "success"
               });
-              // _this.setUserMsg(res.result);
+              _this.setUserMsg(res.result);
               // _this.$store.commit('setLoginIn', true);
-              // setTimeout(function () {
-              //   _this.changeIndex('首页');
-              //   _this.$router.push({path: '/'});
-              //   _this.$router.go(0)
-              // }, 2000)
+              setTimeout(function () {
+                _this.$router.push({path: '/'});
+                _this.$router.go(0)
+              }, 2000)
             } else {
-              this.$notify({
-                title: "提示",
-                message: "用户名或密码错误",
-                position: "top-right",
-                duration: 2
-              })
+              this.notify("失败",res.result);
             }
           })
           .catch(failResponse => {
           });
-      }
+      },
 
-      //
-      // setUserMsg (item) {
-      //   //vuex Vue 的状态管理工具 可以作为公共数据缓存使用
-      //   this.$store.commit('setUserId', item.id);
-      //   this.$store.commit('setUsername', item.phoneOrEmail);
-      //   this.$store.commit('setAvator', item.avator)
-      // },
+
+      setUserMsg (item) {
+        //vuex Vue 的状态管理工具 可以作为公共数据缓存使用
+        this.$store.commit('setUserId', item.id);
+        this.$store.commit('setUsername', item.phoneOrEmail);
+      },
 
       //借助router.push跳转页面
-      // goSignUp () {
-      //   this.$router.push({path: '/sign-up'})
-      // }
+      goSignUp: function() {
+        this.$router.push({ path: "/sign-up" });
+      }
     }
   };
 </script>

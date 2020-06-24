@@ -102,6 +102,9 @@ export function post(url, data) {
 
     axios.post(url, data)
       .then(response => {
+
+        // let url = response.headers
+        // console.log(url);
         resolve(response.data);
       }, err => {
         reject(err)

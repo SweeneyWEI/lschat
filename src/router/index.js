@@ -1,26 +1,28 @@
 import Vue from "vue";
 import Router from "vue-router";
 import LoginIn from "../pages/LoginIn";
+import SignUp from "../pages/SignUp";
+import Home from "../pages/Home";
 
 Vue.use(Router);
 
 export default new Router({
   routes: [
     {
-      path: "/",
+      path: "/login-in",
       name: "login-in",
       component: LoginIn
     },
-    // {
-    //   path: '/sign-up',
-    //   name: 'sign-up',
-    //   component: SignUp
-    // },
-    // {
-    //   path: '/',
-    //   name: 'home',
-    //   component: Home
-    // },
+    {
+      path: "/sign-up",
+      name: "sign-up",
+      component: SignUp
+    },
+    {
+      path: '/',
+      name: 'home',
+      component: Home
+    },
     // {
     //   path: '/song-list',
     //   name: 'song-list',

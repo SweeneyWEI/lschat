@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <login-in></login-in>
+    <router-view class="music-content"/>
   </div>
 </template>
 

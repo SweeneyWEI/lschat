@@ -8,3 +8,7 @@ export function loginIn(params) {
   return post("lc/login", params);
 }
 
+export function SignUp(params) {
+  return post("lc/register", params);
+}
+

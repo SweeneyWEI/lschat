@@ -12,6 +12,7 @@
     "element-ui": "^2.13.2",
     "qs": "^6.9.4",
     "vue": "^2.6.11",
+    "vue-notify-message": "^1.0.5",
     "vue-router": "^3.3.4",
     "vuex": "^3.4.0"
   },
