@@ -1,27 +1,24 @@
 <template>
-    <el-radio-group v-model="tabPosition" style="margin-bottom: 30px;">
-        <el-radio-button label="top">top</el-radio-button>
-        <el-radio-button label="right">right</el-radio-button>
-        <el-radio-button label="bottom">bottom</el-radio-button>
-        <el-radio-button label="left">left</el-radio-button>
-    </el-radio-group>
 
-    <el-tabs :tab-position="tabPosition" style="height: 200px;">
-        <el-tab-pane label="好友">好友</el-tab-pane>
-        <el-tab-pane label="群">群</el-tab-pane>
-        <el-tab-pane label="个人中心">个人中心</el-tab-pane>
-    </el-tabs>
+    <div id="test" style="padding-bottom: 700px">
+
+        <el-tabs :tab-position="tabPosition" @tab-click="handleClick">
+            <el-tab-pane label="好友" name="first">好友</el-tab-pane>
+            <el-tab-pane label="群" name="second">群</el-tab-pane>
+            <el-tab-pane label="个人中心" name="third">个人中心</el-tab-pane>
+        </el-tabs>
+
+    </div>
 </template>
-
-
 <script>
 
+  import TheHeader from "./TheHeader";
+
   export default {
-    name: 'home',
+    components: { TheHeader },
     data() {
       return {
-        //tabPosition="left|right|top|bottom"
-        tabPosition: 'bottom'
+        tabPosition: "bottom"
       };
     },
     methods: {
@@ -31,7 +28,3 @@
     }
   };
 </script>
-
-<style lang="scss" scoped>
-    @import url("//unpkg.com/element-ui@2.13.2/lib/theme-chalk/index.css");
-</style>
