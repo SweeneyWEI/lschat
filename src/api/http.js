@@ -1,6 +1,6 @@
 /* eslint-disable */
 import axios from 'axios';
-import qs from "qs";
+import store from '../store';
 axios.defaults.timeout = 5000;  //超时时间设置
 axios.defaults.withCredentials = true;  //true允许跨域
 //Content-Type 响应头
@@ -102,10 +102,10 @@ export function post(url, data) {
 
     axios.post(url, data)
       .then(response => {
-
-        // let url = response.headers
-        // console.log(url);
         resolve(response.data);
+        if (url === "lc/login") {
+          store.commit('setJwt', response.headers.jwt);
+        }
       }, err => {
         reject(err)
       })

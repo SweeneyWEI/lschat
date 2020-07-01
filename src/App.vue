@@ -7,10 +7,14 @@
 
 <script>
 import LoginIn from "./pages/LoginIn";
+import SignUp from "./pages/SignUp";
+import Home from "./pages/Home";
 export default {
   name: "app",
   components: {
-    LoginIn
+    Home,
+    LoginIn,
+    SignUp
   }
 };
 </script>

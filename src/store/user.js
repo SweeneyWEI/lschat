@@ -1,39 +1,50 @@
 const user = {
   state: {
     userId: '',
-    username: ''
+    name: '',
+    jwt: ''
   },
   getters: {
     userId: state => {
-      let userId = state.userId
+      let userId = state.userId;
       if (!userId) {
         userId = JSON.parse(window.localStorage.getItem('userId') || null)
       }
       return userId
     },
-    username: state => {
-      let username = state.username
-      if (!username) {
-        username = JSON.parse(window.localStorage.getItem('username') || null)
+    name: state => {
+      let name = state.name;
+      if (!name) {
+        name = JSON.parse(window.localStorage.getItem('name') || null)
       }
-      return username
+      return name
+    },
+    jwt: state => {
+      let jwt = state.jwt;
+      if (!jwt) {
+        jwt = JSON.parse(window.localStorage.getItem('jwt') || null)
+      }
+      return jwt
     }
   },
   mutations: {
     setUserId: (state, userId) => {
-      state.userId = userId
-      window.localStorage.setItem('userId', JSON.stringify(userId))
+      state.userId = userId;
+      window.localStorage.setItem('userId', JSON.stringify(userId));
+      console.log("保存userId:"+userId);
     },
-    setUsername: (state, username) => {
-      state.username = username
-      window.localStorage.setItem('username', JSON.stringify(username))
+    setUsername: (state, name) => {
+      state.name = name;
+      window.localStorage.setItem('name', JSON.stringify(name));
+      console.log("保存username:"+name);
     },
-    setAvator: (state, avator) => {
-      state.avator = avator
-      window.localStorage.setItem('avator', JSON.stringify(avator))
+    setJwt: (state, jwt) => {
+      state.jwt = jwt;
+      window.localStorage.setItem('jwt', JSON.stringify(jwt));
+      console.log("保存jwt:"+jwt);
     }
   },
   actions: {}
-}
+};
 
 export default user

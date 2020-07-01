@@ -99,12 +99,11 @@
                 message: "登录成功",
                 type: "success"
               });
-              _this.setUserMsg(res.result);
-              // _this.$store.commit('setLoginIn', true);
+              _this.setUserMsg(res);
               setTimeout(function () {
-                _this.$router.push({path: '/'});
-                _this.$router.go(0)
-              }, 2000)
+                _this.$router.push({path: "/home"});
+                // _this.$router.go(0)
+              }, 1000)
             } else {
               this.notify("失败",res.result);
             }
@@ -114,10 +113,10 @@
       },
 
 
-      setUserMsg (item) {
+      setUserMsg (res) {
         //vuex Vue 的状态管理工具 可以作为公共数据缓存使用
-        this.$store.commit('setUserId', item.id);
-        this.$store.commit('setUsername', item.phoneOrEmail);
+        this.$store.commit('setUserId', res.result.userId);
+        this.$store.commit('setUsername', res.result.name);
       },
 
       //借助router.push跳转页面

@@ -24,8 +24,8 @@
                 <!--<el-form-item prop="email" label="邮箱">-->
                     <!--<el-input v-model="registerForm.email" placeholder="邮箱"></el-input>-->
                 <!--</el-form-item>-->
-                <el-form-item prop="birth" label="生日">
-                    <el-date-picker type="date" placeholder="选择日期" v-model="registerForm.birth" style="width: 100%;"></el-date-picker>
+                <el-form-item prop="birthday" label="生日">
+                    <el-date-picker type="date" placeholder="选择日期" v-model="registerForm.birthday" style="width: 100%;"></el-date-picker>
                 </el-form-item>
                 <!--<el-form-item prop="introduction" label="签名">-->
                     <!--<el-input  type="textarea" placeholder="签名" v-model="registerForm.introduction" ></el-input>-->
@@ -61,7 +61,7 @@
         registerForm: { // 注册
           phoneOrEmail: '',
           password: '',
-          birth: ''
+          birthday: ''
         },
         rules: {},
       }
@@ -70,15 +70,15 @@
     methods: {
       SignUp () {
         let _this = this;
-        let d = this.registerForm.birth;
+        let d = this.registerForm.birthday;
         let datetime = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
 
         let userdata = {
           "phoneOrEmail" : this.registerForm.phoneOrEmail,
           "password" : this.registerForm.password,
-          "birth" : datetime
+          "birthday" : datetime
         };
-        SignUp(params)
+        SignUp(userdata)
           .then(res => {
             console.log(res);
             if (res.code === 0) {
@@ -87,10 +87,10 @@
                 type: "success"
               });
               setTimeout(function () {
-                this.$router.push({path: '/'})
+                _this.$router.push({path: '/login-in'});
               }, 1000)
             } else {
-              this.notify("注册失败", res.result)
+              this.notify("注册失败", res.result);
             }
           })
           .catch(err => {
