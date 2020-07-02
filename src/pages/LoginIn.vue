@@ -23,7 +23,6 @@
 </template>
 
 <script>
-  // import { mixin } from '../mixins'
   import LoginLogo from "../components/LoginLogo";
   import { loginIn } from "../api/index";
   import { mixin } from "../mixins";
@@ -101,7 +100,7 @@
               });
               _this.setUserMsg(res);
               setTimeout(function () {
-                _this.$router.push({path: "/home"});
+                _this.$router.push({path: "/backgroud"});
                 // _this.$router.go(0)
               }, 1000)
             } else {

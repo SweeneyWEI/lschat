@@ -5,7 +5,6 @@ axios.defaults.timeout = 5000;  //超时时间设置
 axios.defaults.withCredentials = true;  //true允许跨域
 //Content-Type 响应头
 axios.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8';
-
 // if (process.env.NODE_ENV === 'production') {
 //   /*第二层if，根据.env文件中的VUE_APP_FLAG判断是生产环境还是测试环境*/
 //   if (process.env.VUE_APP_FLAG === 'pro') {
@@ -67,18 +66,18 @@ axios.interceptors.response.use(
   });
 
 
-
 /**
    * 封装get方法
    * @param url
-   * @param data
+   * @param params
    * @returns {Promise}
    */
 
 export function get(url, params = {}) {
   return new Promise((resolve, reject) => {
     axios.get(url, {
-      params: params
+      params: params,
+      headers: {"jwt": store.state.user.jwt}
     })
       .then(response => {
         resolve(response.data);
@@ -91,7 +90,7 @@ export function get(url, params = {}) {
 
 
 /**
-   * 封装post请求
+   * 封装post请求(不带token)
    * @param url
    * @param data
    * @returns {Promise}
@@ -99,7 +98,6 @@ export function get(url, params = {}) {
 
 export function post(url, data) {
   return new Promise((resolve, reject) => {
-
     axios.post(url, data)
       .then(response => {
         resolve(response.data);
@@ -110,5 +108,26 @@ export function post(url, data) {
         reject(err)
       })
   })
+}
+
+/**
+ * 带token post请求
+ * @param url
+ * @param data
+ * @returns {Promise<any>}
+ */
+  export function postWithJwt(url, data) {
+    return new Promise((resolve, reject) => {
+
+      console.log(store);
+        axios.post(url, data,{
+          headers: {"jwt": store.state.user.jwt}
+        })
+        .then(response => {
+          resolve(response.data);
+        }, err => {
+          reject(err)
+        })
+    })
 }
 
