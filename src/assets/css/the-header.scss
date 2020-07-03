@@ -5,8 +5,8 @@
   position: fixed;
   @include layout;
   width: 100%;
-  height: $header-height;
-  line-height: $header-height;
+  height: 60px;
+  line-height: 40px;
   padding: $header-padding;
   margin: $header-margin;
   background-color: $theme-header-color;
@@ -40,12 +40,14 @@
     border-bottom: none;
     box-sizing: border-box;
     cursor: pointer;
+    background-color: whitesmoke;
   }
 }
 
 /*搜索*/
 .header-search {
   @include layout;
+  display: block;
   border-radius: $header-search-radius;
   overflow: hidden;
   input {
@@ -61,7 +63,8 @@
   }
 
   .search-btn {
-    @include layout(center, center);
+    display: inline-table;
+    //@include layout(center, center);
     background-color: $color-blue-active;
     width: $header-search-btn-width;
     height: $header-search-btn-height;

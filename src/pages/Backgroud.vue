@@ -30,7 +30,7 @@
         getUserList()
           .then(res => {
             if (res.code === 0) {
-              //TODO 将搜索结果渲染出来呈现
+              //TODO 将搜索结果渲染出来呈现（用户列表）
 
 
             } else if (res.code === 2001) {

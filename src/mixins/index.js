@@ -8,6 +8,6 @@ export const mixin = {
         duration: 3000,
         position: "top-right"
       });
-    },
+    }
   }
 };

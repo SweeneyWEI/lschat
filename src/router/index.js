@@ -3,7 +3,6 @@ import Router from "vue-router";
 import LoginIn from "../pages/LoginIn";
 import SignUp from "../pages/SignUp";
 import Backgroud from "../pages/Backgroud";
-import Search from "../pages/Search";
 
 Vue.use(Router);
 
@@ -24,6 +23,7 @@ export default new Router({
       name: 'backgroud',
       component: Backgroud
     },
+
     // {
     //   path: '/song-list',
     //   name: 'song-list',
@@ -54,11 +54,6 @@ export default new Router({
     //   name: 'lyric',
     //   component: Lyric
     // },
-    {
-      path: '/search',
-      name: 'search',
-      component: Search
-    },
     // {
     //   path: '/setting',
     //   name: 'setting',

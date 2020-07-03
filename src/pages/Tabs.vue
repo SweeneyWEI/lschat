@@ -13,10 +13,13 @@
   import { getUserList } from "../api/index";
   import { getGroupList } from "../api/index";
   import { getUserInfo } from "../api/index";
-
+  import { mixin } from "../mixins/index";
 
 
   export default {
+    name: "tabs",
+    components: {},
+    mixins: [mixin],
     data() {
       return {
         tabPosition: "bottom"
@@ -28,13 +31,60 @@
         let tabName = tab.name;
 
         if (tabName === "friend") {
-          getUserList();
-        }else if (tabName === "group") {
-          getGroupList();
-        }else if (tabName === "selfCenter") {
-          getUserInfo();
-        }
+          getUserList()
+            .then(res => {
+              if (res.code === 0) {
+                //TODO 将搜索结果渲染出来呈现（用户列表）
 
+
+              } else if (res.code === 2001) {
+                this.notify("登录失败", res.result);
+                this.goLogin();
+              } else {
+                this.notify("服务异常");
+
+              }
+            })
+            .catch(failResponse => {
+            });
+        } else if (tabName === "group") {
+          getGroupList()
+            .then(res => {
+              if (res.code === 0) {
+                //TODO 将搜索结果渲染出来呈现（群列表）
+
+
+              } else if (res.code === 2001) {
+                this.notify("登录失败", res.result);
+                this.goLogin();
+              } else {
+                this.notify("服务异常");
+
+              }
+            })
+            .catch(failResponse => {
+            });
+        } else if (tabName === "selfCenter") {
+          getUserInfo()
+            .then(res => {
+              if (res.code === 0) {
+                //TODO 将搜索结果渲染出来呈现（个人中心页面）
+
+
+              } else if (res.code === 2001) {
+                this.notify("登录失败", res.result);
+                this.goLogin();
+              } else {
+                this.notify("服务异常");
+
+              }
+            })
+            .catch(failResponse => {
+            });
+        }
+      },
+      goLogin() {
+        this.$router.push({ path: "/login-in" });
       }
     }
   };

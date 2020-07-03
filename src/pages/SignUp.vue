@@ -12,18 +12,6 @@
                 <el-form-item prop="password" label="密码">
                     <el-input type="password" placeholder="密码" v-model="registerForm.password"></el-input>
                 </el-form-item>
-                <!--<el-form-item prop="sex" label="性别">-->
-                    <!--<el-radio-group v-model="registerForm.sex">-->
-                        <!--<el-radio :label="0">女</el-radio>-->
-                        <!--<el-radio :label="1">男</el-radio>-->
-                    <!--</el-radio-group>-->
-                <!--</el-form-item>-->
-                <!--<el-form-item prop="phoneNum" label="手机" >-->
-                    <!--<el-input  placeholder="手机" v-model="registerForm.phoneNum"></el-input>-->
-                <!--</el-form-item>-->
-                <!--<el-form-item prop="email" label="邮箱">-->
-                    <!--<el-input v-model="registerForm.email" placeholder="邮箱"></el-input>-->
-                <!--</el-form-item>-->
                 <el-form-item prop="birthday" label="生日">
                     <el-date-picker type="date" placeholder="选择日期" v-model="registerForm.birthday" style="width: 100%;"></el-date-picker>
                 </el-form-item>
@@ -87,7 +75,7 @@
                 type: "success"
               });
               setTimeout(function () {
-                _this.$router.push({path: '/login-in'});
+                _this.$router.push({path: '/'});
               }, 1000)
             } else {
               this.notify("注册失败", res.result);
