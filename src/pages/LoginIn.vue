@@ -116,6 +116,9 @@
         //vuex Vue 的状态管理工具 可以作为公共数据缓存使用
         this.$store.commit('setUserId', res.result.userId);
         this.$store.commit('setUsername', res.result.name);
+        this.$store.commit('setPhone', res.result.phone);
+        this.$store.commit('setEmail', res.result.email);
+        this.$store.commit('setBirthday', res.result.birthday);
       },
 
       //借助router.push跳转页面

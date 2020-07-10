@@ -1,5 +1,6 @@
 
 export const mixin = {
+
   methods: {
     notify(title, message) {
       this.$notify({
@@ -8,6 +9,6 @@ export const mixin = {
         duration: 3000,
         position: "top-right"
       });
-    }
+    },
   }
 };

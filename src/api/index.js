@@ -38,3 +38,18 @@ export function addFriendApply(params) {
   return postWithJwt("lc/uo/apply/friendRequest",params);
 }
 
+//轮询好友申请
+export function scheduleFriendApply(params) {
+  return postWithJwt("lc/uo/schedule/friendRequest",params);
+}
+
+//查询未通过的好友申请
+export function notAllowedApply(params) {
+  return postWithJwt("lc/uo/query/friendRequest",params);
+}
+
+//好友申请通过
+export function agreeApply(params) {
+  return postWithJwt("lc/uo/agree/friendRequest",params);
+}
+

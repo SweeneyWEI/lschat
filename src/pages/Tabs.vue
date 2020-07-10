@@ -10,9 +10,7 @@
     </div>
 </template>
 <script>
-  import { getUserList } from "../api/index";
-  import { getGroupList } from "../api/index";
-  import { getUserInfo } from "../api/index";
+  import { getUserList,getGroupList,getUserInfo } from "../api/index";
   import { mixin } from "../mixins/index";
 
 
@@ -22,7 +20,17 @@
     mixins: [mixin],
     data() {
       return {
-        tabPosition: "bottom"
+        tabPosition: "bottom",
+        tabPage:"friend",
+        userList:[],
+        groupList:[],
+        userInfo:{
+          phone:"",
+          email:"",
+          userName:"",
+          birthday:"",
+          userId:""
+        }
       };
     },
     methods: {
@@ -31,12 +39,12 @@
         let tabName = tab.name;
 
         if (tabName === "friend") {
+          this.tabPage = "friend";
           getUserList()
             .then(res => {
               if (res.code === 0) {
-                //TODO 将搜索结果渲染出来呈现（用户列表）
-
-
+                //将搜索结果渲染出来呈现（用户列表）
+                this.userList = res.result;
               } else if (res.code === 2001) {
                 this.notify("登录失败", res.result);
                 this.goLogin();
@@ -48,11 +56,12 @@
             .catch(failResponse => {
             });
         } else if (tabName === "group") {
+          this.tabPage = "group";
           getGroupList()
             .then(res => {
               if (res.code === 0) {
-                //TODO 将搜索结果渲染出来呈现（群列表）
-
+                //将搜索结果渲染出来呈现（群列表）
+                this.groupList = res.result;
 
               } else if (res.code === 2001) {
                 this.notify("登录失败", res.result);
@@ -65,11 +74,15 @@
             .catch(failResponse => {
             });
         } else if (tabName === "selfCenter") {
+          this.tabPage = "selfCenter";
           getUserInfo()
             .then(res => {
               if (res.code === 0) {
-                //TODO 将搜索结果渲染出来呈现（个人中心页面）
-
+                //将搜索结果渲染出来呈现（个人中心页面）
+                this.userInfo.userId = res.result.userId;
+                this.userInfo.userName = res.result.name;
+                this.userInfo.phone = res.result.phone;
+                this.userInfo.email = res.result.email;
 
               } else if (res.code === 2001) {
                 this.notify("登录失败", res.result);
