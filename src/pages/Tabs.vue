@@ -97,7 +97,7 @@
         }
       },
       goLogin() {
-        this.$router.push({ path: "/login-in" });
+        this.$router.push({ path: "/" });
       }
     }
   };

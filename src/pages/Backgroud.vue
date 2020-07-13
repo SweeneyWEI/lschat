@@ -92,14 +92,14 @@
       },
 
       goLogin() {
-        this.$router.push({ path: "/login-in" });
+        this.$router.push({ path: "/" });
       },
       //TODO 打开对话框建立长链接
       goChat(item) {
         let friendId = item.friendId;
         let chatId = item.chatId;
       },
-//加好友申请
+//轮询好友申请
       getUserApply() {
         let _this = this;
         scheduleFriendApply()
@@ -113,6 +113,8 @@
                   this.notify("加好友申请", friendName);
                   this.friendApplyList.push(res.result[i]);
                 }
+                this.$store.commit("setFriendApplys",this.friendApplyList);
+                console.log("更新applyList缓存");
               }
             } else if (res.code === 2001) {
               this.notify("登录失败", res.result);

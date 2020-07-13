@@ -23,17 +23,21 @@
                 </li>
             </ul>
 
-            <el-dropdown  v-if="this.friendApplyList.length > 0">
-                <el-badge v-if="this.friendApplyList.length > 0" :value="this.friendApplyList.length" class="item">
+            <el-dropdown v-if="this.applySize>0">
+                <el-badge v-bind:value="this.applySize" class="item">
                     <el-button type="primary">
                         好友申请<i class="el-icon-arrow-down el-icon--right"></i>
                     </el-button>
                 </el-badge>
                 <el-dropdown-menu></el-dropdown-menu>
                 <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item v-for="(item,index) in this.friendApplyList" @click.native="handleApply(item.userId, index)">{{item.name}}</el-dropdown-item>
+                    <el-dropdown-item v-for="(item,index) in this.friendApplyList" :key="item.userId"
+                                      @click.native="handleApply(item.userId, index)">{{item.name}}
+                    </el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
+
+            <el-button type="primary" icon="el-icon-circle-close" @click.native="goLogout"></el-button>
 
         </div>
         <div id="addDialog">
@@ -57,7 +61,7 @@
 
 <script>
   import { mixin } from "../mixins";
-  import { getQueryUser, getUserInfo, addFriendApply, agreeApply } from "../api/index";
+  import { getQueryUser, getUserInfo, addFriendApply, agreeApply, logout } from "../api/index";
   import { mapGetters } from "vuex";
 
   export default {
@@ -65,12 +69,21 @@
     mixins: [mixin],
     computed: {
       ...mapGetters([
-        //TODO store的数据迁移过来
         "friendApplyList"
       ])
     },
+
+    watch: {
+      friendApplyList: function() {
+        this.applySize = this.friendApplyList.length;
+        // this.$children[0].$children[0].$forceUpdate();
+        console.log("更新申请数字applySize:"+this.applySize);
+      }
+    },
+
     data() {
       return {
+        applySize:0,
         username: "weixin",
         keywords: "",
         showCode: "",
@@ -158,13 +171,12 @@
                 message: "好友申请已发送",
                 type: "success"
               });
-            }else if (res.code === 1) {
+            } else if (res.code === 1) {
               this.$message({
                 message: "已经是好友关系，无需重复添加",
                 type: "success"
               });
-            }
-            else {
+            } else {
               this.notify("好友申请发送失败", res.result);
             }
           })
@@ -172,36 +184,59 @@
           });
       },
 
-      handleApply(userId, index){
+      handleApply(userId, index) {
 
-          let params = new URLSearchParams();
-          params.append("friendId", userId);
-          agreeApply(params)
-            .then(res => {
-              if (res.code === 0) {
-                //TODO 删除已经处理过的请求
-                this.friendApplyList.splice(index,1);
-                console.log("加好友成功");
-                this.$message({
-                  message: "你们已经成为好友",
-                  type: "success"
-                });
-              } else if (res.code === 2001) {
-                this.notify("登录失败", res.result);
-                this.goLogin();
-              } else {
-                console.log("服务异常");
-                this.notify("服务异常");
+        let params = new URLSearchParams();
+        params.append("friendId", userId);
+        agreeApply(params)
+          .then(res => {
+            if (res.code === 0) {
+              //TODO 删除已经处理过的请求
+              console.log("加好友成功");
+              let applyList = this.friendApplyList;
+              console.log("申请列表删除前:"+applyList[0].name);
+              //使用splice删除数据是，在v-for组件下，需要指定:key，否则splice不生效
+              applyList.splice(index,1);
+              this.$store.commit("setFriendApplys", applyList);
+              console.log("删除完成");
+              this.$message({
+                message: "你们已经成为好友",
+                type: "success"
+              });
+            } else if (res.code === 2001) {
+              this.notify("登录失败", res.result);
+              this.goLogin();
+            } else {
+              console.log("服务异常");
+              this.notify("服务异常");
 
-              }
-            })
-            .catch(failResponse => {
-            });
-        },
+            }
+          })
+          .catch(failResponse => {
+          });
+      },
 
-        goLogin() {
-          this.$router.push({ path: "/login-in" });
-        }
+      goLogin() {
+        this.$router.push({ path: "/" });
+      },
+
+      goLogout() {
+        logout()
+          .then(res => {
+            if (res.code === 0) {
+              this.goLogin();
+            } else if (res.code === 2001) {
+              this.notify("登录失败", res.result);
+              this.goLogin();
+            } else {
+              console.log("服务异常");
+              this.notify("服务异常");
+
+            }
+          })
+          .catch(failResponse => {
+          });
+      }
     }
   };
 </script>

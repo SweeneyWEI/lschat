@@ -8,6 +8,11 @@ export function loginIn(params) {
   return post("lc/login", params);
 }
 
+// 登出
+export function logout(params) {
+  return postWithJwt("lc/logout", params);
+}
+
 // 注册
 export function SignUp(params) {
   return post("lc/register", params);
