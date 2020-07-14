@@ -1,28 +1,20 @@
 const user = {
   state: {
-    userId: '',
-    userName: '',
     jwt: '',
-    phone:'',
-    email:'',
-    birthday:'',
-    friendApplyList: []
+    friendApplyList: [],
+    userList:'',
+    groupList:'',
+    tabPage:'',
+    userInfo:{
+      phone:"",
+      email:"",
+      userName:"",
+      birthday:"",
+      userId:""
+    }
   },
   getters: {
-    userId: state => {
-      let userId = state.userId;
-      if (!userId) {
-        userId = JSON.parse(window.localStorage.getItem('userId') || null)
-      }
-      return userId
-    },
-    userName: state => {
-      let userName = state.userName;
-      if (!userName) {
-        userName = JSON.parse(window.localStorage.getItem('userName') || null)
-      }
-      return userName
-    },
+
     jwt: state => {
       let jwt = state.jwt;
       if (!jwt) {
@@ -30,26 +22,21 @@ const user = {
       }
       return jwt
     },
-    phone: state => {
-      let phone = state.phone;
-      if (!phone) {
-        phone = JSON.parse(window.localStorage.getItem('phone') || null)
+
+    tabPage: state => {
+      let tabPage = state.tabPage;
+      if (!tabPage) {
+        tabPage = JSON.parse(window.localStorage.getItem('tabPage') || null)
       }
-      return phone
+      return tabPage
     },
-    email: state => {
-      let email = state.email;
-      if (!email) {
-        email = JSON.parse(window.localStorage.getItem('email') || null)
+
+    userInfo: state => {
+      let userInfo = state.userInfo;
+      if (!userInfo) {
+        userInfo = JSON.parse(window.localStorage.getItem('userInfo') || null)
       }
-      return email
-    },
-    birthday: state => {
-      let birthday = state.birthday;
-      if (!birthday) {
-        birthday = JSON.parse(window.localStorage.getItem('birthday') || null)
-      }
-      return birthday
+      return userInfo
     },
     friendApplyList: state => {
       let friendApplyList = state.friendApplyList;
@@ -58,45 +45,53 @@ const user = {
       }
       return friendApplyList
     },
+    userList: state => {
+      let userList = state.userList;
+      if (!userList.length) {
+        userList = JSON.parse(window.sessionStorage.getItem('userList') || null)
+      }
+      return userList
+    },
+    groupList: state => {
+      let groupList = state.groupList;
+      if (!groupList.length) {
+        groupList = JSON.parse(window.sessionStorage.getItem('groupList') || null)
+      }
+      return groupList
+    },
+
   },
   mutations: {
-    setUserId: (state, userId) => {
-      state.userId = userId;
-      window.localStorage.setItem('userId', JSON.stringify(userId));
-      console.log("保存userId:"+userId);
-    },
-    setUsername: (state, userName) => {
-      state.userName = userName;
-      window.localStorage.setItem('userName', JSON.stringify(userName));
-      console.log("保存username:"+userName);
-    },
+//缓存jwt
     setJwt: (state, jwt) => {
       state.jwt = jwt;
       window.localStorage.setItem('jwt', JSON.stringify(jwt));
-      console.log("保存jwt:"+jwt);
     },
-    setPhone: (state, phone) =>{
-      state.phone = phone;
-      window.localStorage.setItem('phone', JSON.stringify(phone));
-      console.log("保存phone:"+phone);
+    //缓存当前所在tag
+    setTabPage: (state, tabPage) => {
+      state.tabPage = tabPage;
+      window.localStorage.setItem('tabPage', JSON.stringify(tabPage));
+    },
+//缓存用户信息
+    setUserInfo: (state, userInfo) =>{
+      state.userInfo = userInfo;
+      window.localStorage.setItem('userInfo', JSON.stringify(userInfo));
 
     },
-    setEmail: (state, email) =>{
-      state.email = email;
-      window.localStorage.setItem('email', JSON.stringify(email));
-      console.log("保存email:"+email);
-
-    },
-    setBirthday: (state, birthday) =>{
-      state.birthday = birthday;
-      window.localStorage.setItem('birthday', JSON.stringify(birthday));
-      console.log("保存birthday:"+birthday);
-
-    },
+    //缓存好友申请
     setFriendApplys: (state, friendApplyList) => {
       state.friendApplyList = friendApplyList;
       window.sessionStorage.setItem('friendApplyList', JSON.stringify(friendApplyList));
-      console.log("friendApplyList:"+friendApplyList);
+    },
+    //缓存好友列表
+    setUserList: (state, userList) => {
+      state.userList = userList;
+      window.sessionStorage.setItem('userList', JSON.stringify(userList));
+    },
+    //缓存群列表
+    setGroupList: (state, groupList) => {
+      state.groupList = groupList;
+      window.sessionStorage.setItem('groupList', JSON.stringify(groupList));
     },
   },
   actions: {}

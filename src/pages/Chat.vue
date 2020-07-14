@@ -10,7 +10,7 @@
   import { mixin } from "../mixins";
 
   export default {
-    name: "the-header",
+    name: "chat",
     mixins: [mixin],
 
     data() {

@@ -68,7 +68,6 @@
         };
         SignUp(userdata)
           .then(res => {
-            console.log(res);
             if (res.code === 0) {
               this.$message({
                 message: "注册成功",

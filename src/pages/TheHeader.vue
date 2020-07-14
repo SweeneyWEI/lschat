@@ -84,7 +84,7 @@
     data() {
       return {
         applySize:0,
-        username: "weixin",
+        username: "",
         keywords: "",
         showCode: "",
         userQueryList: [],
@@ -131,7 +131,6 @@
         getUserInfo(params)
           .then(res => {
             if (res.code === 0) {
-              console.log("userInfo :", res.result);
               this.friendInfo.friendId = res.result.userId;
               this.friendInfo.friendName = res.result.name;
               this.friendInfo.friendPhone = res.result.phone;
@@ -192,13 +191,10 @@
           .then(res => {
             if (res.code === 0) {
               //TODO 删除已经处理过的请求
-              console.log("加好友成功");
               let applyList = this.friendApplyList;
-              console.log("申请列表删除前:"+applyList[0].name);
               //使用splice删除数据是，在v-for组件下，需要指定:key，否则splice不生效
               applyList.splice(index,1);
               this.$store.commit("setFriendApplys", applyList);
-              console.log("删除完成");
               this.$message({
                 message: "你们已经成为好友",
                 type: "success"

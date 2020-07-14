@@ -21,9 +21,6 @@
     data() {
       return {
         tabPosition: "bottom",
-        tabPage:"friend",
-        userList:[],
-        groupList:[],
         userInfo:{
           phone:"",
           email:"",
@@ -35,16 +32,15 @@
     },
     methods: {
       handleClick(tab, event) {
-        console.log(tab, event);
         let tabName = tab.name;
-
+        this.$store.commit("setTabPage",tabName);
         if (tabName === "friend") {
-          this.tabPage = "friend";
           getUserList()
             .then(res => {
               if (res.code === 0) {
-                //将搜索结果渲染出来呈现（用户列表）
-                this.userList = res.result;
+                //将搜索结果缓存（用户列表）
+                this.$store.commit("setUserList", res.result);
+
               } else if (res.code === 2001) {
                 this.notify("登录失败", res.result);
                 this.goLogin();
@@ -60,8 +56,8 @@
           getGroupList()
             .then(res => {
               if (res.code === 0) {
-                //将搜索结果渲染出来呈现（群列表）
-                this.groupList = res.result;
+                //将搜索结果缓存（群列表）
+                this.$store.commit("setGroupList", res.result);
 
               } else if (res.code === 2001) {
                 this.notify("登录失败", res.result);
@@ -78,11 +74,13 @@
           getUserInfo()
             .then(res => {
               if (res.code === 0) {
-                //将搜索结果渲染出来呈现（个人中心页面）
+                //将搜索结果缓存（个人中心页面）
                 this.userInfo.userId = res.result.userId;
                 this.userInfo.userName = res.result.name;
                 this.userInfo.phone = res.result.phone;
                 this.userInfo.email = res.result.email;
+                this.userInfo.birthday = res.result.birthday;
+                this.$store.commit("setUserInfo", this.userInfo);
 
               } else if (res.code === 2001) {
                 this.notify("登录失败", res.result);

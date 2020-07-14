@@ -65,6 +65,13 @@
           password: [
             { validator: validatePassword, message: "请输入密码", trigger: "blur" }
           ]
+        },
+        userInfo:{
+          phone:"",
+          email:"",
+          userName:"",
+          birthday:"",
+          userId:""
         }
       };
     },
@@ -114,11 +121,13 @@
 
       setUserMsg (res) {
         //vuex Vue 的状态管理工具 可以作为公共数据缓存使用
-        this.$store.commit('setUserId', res.result.userId);
-        this.$store.commit('setUsername', res.result.name);
-        this.$store.commit('setPhone', res.result.phone);
-        this.$store.commit('setEmail', res.result.email);
-        this.$store.commit('setBirthday', res.result.birthday);
+        this.userInfo.userId = res.result.userId;
+        this.userInfo.name = res.result.name;
+        this.userInfo.phone = res.result.phone;
+        this.userInfo.email = res.result.email;
+        this.userInfo.birthday = res.result.birthday;
+
+        this.$store.commit('setUserInfo', this.userInfo);
       },
 
       //借助router.push跳转页面

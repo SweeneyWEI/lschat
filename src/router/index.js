@@ -3,6 +3,7 @@ import Router from "vue-router";
 import LoginIn from "../pages/LoginIn";
 import SignUp from "../pages/SignUp";
 import Backgroud from "../pages/Backgroud";
+import Chat from "../pages/Chat";
 
 Vue.use(Router);
 
@@ -24,11 +25,11 @@ export default new Router({
       component: Backgroud
     },
 
-    // {
-    //   path: '/song-list',
-    //   name: 'song-list',
-    //   component: SongList
-    // },
+    {
+      path: '/chat',
+      name: 'chat',
+      component: Chat
+    },
     // {
     //   path: '/my-music',
     //   name: 'my-music',
