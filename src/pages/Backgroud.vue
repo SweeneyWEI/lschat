@@ -4,12 +4,16 @@
         <the-header/>
         <tabs/>
         <div id="showList">
-        <ul v-if="tabPage === 'friend' " class="infinite-list" style="overflow:auto">
-        <li v-for="item in this.userList" class="infinite-list-item" :key="item.friendId" @click.native="goChat(item)">{{item.name}}</li>
-        </ul>
-        <ul v-else-if="tabPage === 'group' " class="infinite-list" style="overflow:auto">
-        <li v-for="item in this.groupList" class="infinite-list-item" :key="item.groupId" @click.native="goChat(item)">{{item.groupName}}</li>
-        </ul>
+            <ul v-if="tabPage === 'friend' " class="infinite-list">
+                <li v-for="item in this.userList" class="infinite-list-item" :key="item.friendId"
+                    @click="goChat(item)">{{item.name}}
+                </li>
+            </ul>
+            <ul v-else-if="tabPage === 'group' " class="infinite-list">
+                <li v-for="item in this.groupList" class="infinite-list-item" :key="item.groupId"
+                    @click="goChat(item)">{{item.groupName}}
+                </li>
+            </ul>
         </div>
         <!--<div v-else="tabPage === 'selfCenter' " id="userInfo">-->
         <!--<label style="display: inline-block;width: 100%;">{{this.userName}}</label>-->
@@ -42,14 +46,19 @@
     mixins: [mixin],
     data() {
       return {
-        timer: ""
+        timer: "",
+        chatObject: {
+          friendId:0,
+          roomId: "",
+          roomName: "",
+          idTag: "",
+          avatar:""
+        }
       };
     },
     computed: {
       ...mapGetters([
-        //TODO store的数据迁移过来
         "userInfo",
-        "jwt",
         "friendApplyList",
         "tabPage",
         "userList",
@@ -89,12 +98,32 @@
       goLogin() {
         this.$router.push({ path: "/" });
       },
-      //TODO 打开对话框建立长链接
+
+      // 打开对话框建立长链接
       goChat(item) {
-        let friendId = item.friendId;
-        let chatId = item.chatId;
-        this.$router.push({ path: "/chat"});
+        let roomId;
+        let roomName;
+        let friendId;
+        let idTag = "chatId";
+        if (this.tabPage === "friend") {
+          friendId = item.friendId;
+          roomId = item.chatId;
+          roomName = item.name;
+        } else {
+          roomId = item.groupId;
+          idTag = "groupId";
+          roomName = item.groupName;
+        }
+        this.chatObject.friendId = friendId;
+        this.chatObject.roomId = roomId;
+        this.chatObject.roomName = roomName;
+        this.chatObject.idTag = idTag;
+        this.chatObject.avatar = item.avatar;
+
+        this.$store.commit("setChatObject", this.chatObject);
+        this.$router.push({ path: "/chat" });
       },
+
 //轮询好友申请
       getUserApply() {
         console.log(this.tabPage);
@@ -147,3 +176,7 @@
     }
   };
 </script>
+
+<style lang="scss" scoped>
+    @import '../assets/css/app.scss';
+</style>

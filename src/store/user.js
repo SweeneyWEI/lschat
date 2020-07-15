@@ -11,6 +11,13 @@ const user = {
       userName:"",
       birthday:"",
       userId:""
+    },
+    chatObject: {
+      friendId:"",
+      roomId: "",
+      roomName: "",
+      idTag: "",
+      avatar:""
     }
   },
   getters: {
@@ -37,6 +44,14 @@ const user = {
         userInfo = JSON.parse(window.localStorage.getItem('userInfo') || null)
       }
       return userInfo
+    },
+
+    chatObject: state => {
+      let chatObject = state.chatObject;
+      if (!chatObject) {
+        chatObject = JSON.parse(window.localStorage.getItem('chatObject') || null)
+      }
+      return chatObject
     },
     friendApplyList: state => {
       let friendApplyList = state.friendApplyList;
@@ -76,7 +91,11 @@ const user = {
     setUserInfo: (state, userInfo) =>{
       state.userInfo = userInfo;
       window.localStorage.setItem('userInfo', JSON.stringify(userInfo));
-
+    },
+    //缓存ws入参参数
+    setChatObject: (state, chatObject) =>{
+      state.chatObject = chatObject;
+      window.localStorage.setItem('chatObject', JSON.stringify(chatObject));
     },
     //缓存好友申请
     setFriendApplys: (state, friendApplyList) => {

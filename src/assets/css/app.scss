@@ -9,3 +9,10 @@
 .music-content {
   flex: 1;
 }
+
+.infinite-list{
+  position: absolute;
+  top: 60px;
+  bottom: 60px;
+  overflow: auto;
+}

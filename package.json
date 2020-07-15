@@ -10,10 +10,13 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "element-ui": "^2.13.2",
+    "jwchat": "^0.2.42",
     "qs": "^6.9.4",
+    "socket.io-client": "^2.3.0",
     "vue": "^2.6.11",
     "vue-notify-message": "^1.0.5",
     "vue-router": "^3.3.4",
+    "vue-socket.io": "^3.0.9",
     "vuex": "^3.4.0"
   },
   "devDependencies": {

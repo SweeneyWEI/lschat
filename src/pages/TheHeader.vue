@@ -76,7 +76,6 @@
     watch: {
       friendApplyList: function() {
         this.applySize = this.friendApplyList.length;
-        // this.$children[0].$children[0].$forceUpdate();
         console.log("更新申请数字applySize:"+this.applySize);
       }
     },
