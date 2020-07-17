@@ -7,10 +7,20 @@
             <ul v-if="tabPage === 'friend' " class="infinite-list">
                 <li v-for="(item, index) in this.userList" class="infinite-list-item" :key="item.friendId"
                     @click="goChat(item, index)">
-                    <el-badge is-dot>
+                    <el-badge :hidden="checkMessageDot(item.friendId)" is-dot>
                         <el-avatar :size="25" :src="item.avatar"/>
                     </el-badge>
                     {{item.name}}
+                    <el-dropdown @command="handleCommand" style="float: right;">
+                        <span>
+                            <i class="el-icon-more" style="font-size: 23px;"></i>
+                        </span>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item command="card">好友信息</el-dropdown-item>
+                            <el-dropdown-item command="delete" divided>删除好友</el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                    <el-divider></el-divider>
                 </li>
             </ul>
             <ul v-else-if="tabPage === 'group' " class="infinite-list">
@@ -18,8 +28,38 @@
                     @click="goChat(item, index)">
                     <el-avatar :size="25" :src="item.avatar"/>
                     {{item.groupName}}
+                    <el-dropdown @command="handleGroupCommand" style="float: right;">
+                        <span class="el-dropdown-link">
+                            <i class="el-icon-more" style="font-size: 23px;"></i>
+                        </span>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item command="card">群信息</el-dropdown-item>
+                            <el-dropdown-item command="delete" divided>删除群</el-dropdown-item>
+                            <el-dropdown-item command="addMember" divided>拉好友入群</el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                    <el-divider></el-divider>
                 </li>
             </ul>
+        </div>
+
+        <div id="addDialog">
+            <el-dialog
+                    title="删除好友"
+                    :visible.sync="dialogVisible"
+                    width="30%">
+                <span>
+                    <!--<el-image style="width: 100px; height: 100px" :src="this.friendInfo.avatar" :fit="fill"></el-image>-->
+                    <br>
+                    <label style="display: inline-block;width: 100%;">用户名称: {{this.friendInfo.friendName}}</label>
+                    <br>
+                    <label style="display: inline-block;width: 100%;">用户手机号: {{this.friendInfo.friendPhone}}</label>
+                </span>
+                <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="deleteFriend(this.friendInfo.friendId)">删除好友</el-button>
+  </span>
+            </el-dialog>
         </div>
         <!--<div v-else="tabPage === 'selfCenter' " id="userInfo">-->
         <!--<label style="display: inline-block;width: 100%;">{{this.userName}}</label>-->
@@ -38,7 +78,7 @@
   import { mapGetters } from "vuex";
   import TheHeader from "./TheHeader";
   import Tabs from "./Tabs";
-  import { getUserList, scheduleFriendApply, notAllowedApply, messageAlert } from "../api/index";
+  import { getUserList, scheduleFriendApply, notAllowedApply, messageAlert, getUserInfo, deleteFriendRequest } from "../api/index";
   import { mixin } from "../mixins";
 
 
@@ -52,14 +92,23 @@
     mixins: [mixin],
     data() {
       return {
-        dotFlag: 0,
+        applyTimer: "",
+        messageUserList: [],
         chatObject: {
           friendId: 0,
           roomId: "",
           roomName: "",
           idTag: "",
           avatar: ""
-        }
+        },
+        friendInfo:{
+          friendId:"",
+          avatar:"",
+          friendName:"",
+          friendPhone:"",
+          friendEmail:""
+        },
+        dialogVisible: false
       };
     },
     computed: {
@@ -69,26 +118,22 @@
         "tabPage",
         "userList",
         "groupList",
-        "messageDotUsers"
+        "messageDotUsersList"
       ])
     },
-    //
-    // watch: {
-    //   messageDotUsers: function() {
-    //     this.dotFlag = this.messageDotUsers.length;
-    //     console.log("dotFlag ："+this.dotFlag);
-    //   }
-    // },
 
     created() {
       this.getUserList();
       this.getNotAllowedApply();
     },
     mounted() {
-      let applyTimer = setInterval(this.getUserApply, 3000);
+      this.applyTimer = setInterval(this.getUserApply, 3000);
       let messageTimer = setInterval(this.scheduleMessage, 2000);
-      this.$store.commit("setApplyTimer", applyTimer);
       this.$store.commit("setMessageTimer", messageTimer);
+    },
+
+    beforeDestroy() {
+      clearInterval(this.applyTimer);
     },
 
     methods: {
@@ -120,14 +165,20 @@
         let friendId;
         let idTag = "chatId";
         if (this.tabPage === "friend") {
-          //判断是否有未读消息
-          if (!this.checkMessageDot) {
-            this.messageDotUsers.splice(index, 1);
-            this.$store.commit("setMessageDotUsers", this.messageDotUsers);
-          }
           friendId = item.friendId;
           roomId = item.chatId;
           roomName = item.name;
+
+          //判断是否有未读消息
+          if (this.checkMessageDot(friendId)) {
+          } else {
+            console.log("判断用户有未读消息");
+            let arrayList = this.messageDotUsersList;
+            let messageIndex = arrayList.findIndex(userId => userId === friendId);
+            arrayList.splice(messageIndex, 1);
+            this.$store.commit("setMessageDotUsersList", arrayList);
+            console.log("删除");
+          }
         } else {
           roomId = item.groupId;
           idTag = "groupId";
@@ -194,16 +245,18 @@
       },
 //轮询实时消息
       scheduleMessage() {
+        let _this = this;
         messageAlert()
           .then(res => {
             if (res.code === 0) {
               //提示消息来临
               if (res.result.length > 0) {
                 for (let i = 0; i < res.result.length; i++) {
-                  this.messageDotUsers.push(res.result[i].friendId);
+                  this.messageUserList.push(res.result[i].friendId);
                   this.$message.info(res.result[i].userName + "来消息了！");
                 }
-                this.$store.commit("setMessageDotUsers", this.messageDotUsers);
+                this.$store.commit("setMessageDotUsersList", this.messageUserList);
+                // this.$children[0].$children[0].$forceUpdate();
               }
             } else if (res.code === 2001) {
               this.notify("登录失败", res.result);
@@ -214,13 +267,71 @@
           });
       },
 
-// //判断用户是否有未读消息，展示小红点(true:隐藏，false:展示)
-//       checkMessageDot(friendId) {
-//         let find = this.messageDotUsers.find(item => item === friendId);
-//         console.log("小红点检测:" + find);
-//         return find === undefined;
-//
-//       }
+//判断用户是否有未读消息，展示小红点(true:隐藏，false:展示)
+      checkMessageDot(friendId) {
+        if (this.messageDotUsersList === null || this.messageDotUsersList.length === 0) {
+          return true;
+        }
+        let find = this.messageDotUsersList.find(item => item === friendId);
+        console.log("小红点检测:" + find);
+        return find === undefined;
+
+      }
+    },
+//好友操作
+    handleCommand(command) {
+      if (command === "card") {
+
+//TODO 学生信息卡
+
+      } else if (command === "delete") {
+        let params = new URLSearchParams();
+        params.append("friendId", friendId);
+        getUserInfo(params)
+          .then(res => {
+            if (res.code === 0) {
+              this.friendInfo.friendId = res.result.userId;
+              this.friendInfo.friendName = res.result.name;
+              this.friendInfo.friendPhone = res.result.phone;
+              this.friendInfo.avatar = res.result.avatar;
+              this.friendInfo.friendEmail = res.result.email;
+              //将弹窗弹出
+              this.dialogVisible = true;
+
+            } else if (res.code === 2001) {
+              this.notify("登录失败", res.result);
+              this.goLogin();
+            } else {
+              this.notify("服务异常");
+            }
+          })
+          .catch(failResponse => {
+          });
+      }
+    },
+//群操作
+    handleGroupCommand(command) {
+      //TODO 群操作
+    },
+//删除好友
+    deleteFriend(friendId){
+      this.dialogVisible = false;
+
+      let params = new URLSearchParams();
+      params.append("friendId", friendId);
+      deleteFriendRequest(params)
+        .then(res => {
+          if (res.code === 0) {
+            this.$message.success("好友已删除");
+          } else if (res.code === 2001) {
+            this.notify("登录失败", res.result);
+            this.goLogin();
+          } else {
+            this.notify("服务异常");
+          }
+        })
+        .catch(failResponse => {
+        });
     }
   };
 </script>

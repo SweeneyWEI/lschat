@@ -189,7 +189,7 @@
         agreeApply(params)
           .then(res => {
             if (res.code === 0) {
-              //TODO 删除已经处理过的请求
+              //删除已经处理过的请求
               let applyList = this.friendApplyList;
               //使用splice删除数据是，在v-for组件下，需要指定:key，否则splice不生效
               applyList.splice(index,1);

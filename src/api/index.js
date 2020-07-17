@@ -61,4 +61,8 @@ export function agreeApply(params) {
 export function messageAlert(params) {
   return postWithJwt("lc/uo/schedule/message",params);
 }
+//删除好友
+export function deleteFriendRequest(params) {
+  return postWithJwt("lc/uo/delete/friend",params);
+}
 

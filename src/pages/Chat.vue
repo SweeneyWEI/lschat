@@ -1,18 +1,3 @@
-<!--<template>-->
-<!--<div>-->
-<!--<div id="header">-->
-<!--<el-page-header v-if="" @back="goBack(-1)" v-bind:content="this.chatObject.roomName">-->
-<!--</el-page-header>-->
-<!--</div>-->
-<!--<div id="sendMsgFoot" class="footer">-->
-<!--<el-input v-model="messageContent" placeholder="请输入消息..."-->
-<!--@keyup.enter.native="sendMsg"></el-input>-->
-<!--<div>-->
-<!--<el-button @click="sendMsg">发送</el-button>-->
-<!--</div>-->
-<!--</div>-->
-<!--</div>-->
-<!--</template>-->
 <template>
     <JwChat-index :config="config" :taleList="chatList" :toolConfig="this.tool" @enter="sendMsg"
             v-model="messageContent">
@@ -85,7 +70,7 @@
       this.friendId = this.chatObject.friendId;
       console.log("准备建立长连接...");
       console.log("roomId:" + this.chatObject.roomId + "idTag:" + this.chatObject.idTag);
-      let wsUrl = "http://localhost:5555" + "?jwt=" + this.jwt + "&" + this.chatObject.idTag + "=" + this.chatObject.roomId;
+      let wsUrl = "http://10.50.10.76:5555" + "?jwt=" + this.jwt + "&" + this.chatObject.idTag + "=" + this.chatObject.roomId;
       this.socket = io.connect(wsUrl, options);
     },
 

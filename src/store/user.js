@@ -21,7 +21,7 @@ const user = {
       idTag: "",
       avatar:""
     },
-    messageDotUsers:[]
+    messageDotUsersList:[]
   },
   getters: {
     applyTimer: state => {
@@ -92,12 +92,12 @@ const user = {
       }
       return groupList
     },
-    messageDotUsers: state => {
-      let messageDotUsers = state.messageDotUsers;
-      if (!messageDotUsers.length) {
-        messageDotUsers = JSON.parse(window.localStorage.getItem('messageDotUsers') || null)
+    messageDotUsersList: state => {
+      let messageDotUsersList = state.messageDotUsersList;
+      if (!messageDotUsersList.length) {
+        messageDotUsersList = JSON.parse(window.localStorage.getItem('messageDotUsersList') || null)
       }
-      return messageDotUsers
+      return messageDotUsersList
     },
 
   },
@@ -147,11 +147,11 @@ const user = {
       state.groupList = groupList;
       window.localStorage.setItem('groupList', JSON.stringify(groupList));
     },
-  },
-  //缓存新来消息用户
-  setMessageDotUsers: (state, messageDotUsers) => {
-    state.messageDotUsers = messageDotUsers;
-    window.localStorage.setItem('messageDotUsers', JSON.stringify(messageDotUsers));
+    //缓存新来消息用户
+    setMessageDotUsersList: (state, messageDotUsersList) => {
+      state.messageDotUsersList = messageDotUsersList;
+      window.localStorage.setItem('messageDotUsersList', JSON.stringify(messageDotUsersList));
+    },
   },
   actions: {}
 };

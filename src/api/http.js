@@ -16,7 +16,7 @@ axios.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8';
 //   }
 // } else {
   //dev 开发环境
-  axios.defaults.baseURL = 'http://localhost:8132';
+  axios.defaults.baseURL = 'http://10.50.10.76:8132';
 // }
 
 // 响应拦截器

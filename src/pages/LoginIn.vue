@@ -89,7 +89,6 @@
     created () {
       //清除定时器
       clearInterval(this.messageTimer);
-      clearInterval(this.applyTimer);
     },
 
     //在methods中定义方法，让v-on指令来接收（调用）
