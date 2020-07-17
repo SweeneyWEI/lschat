@@ -12,8 +12,6 @@
 <!--</div>-->
 <!--</div>-->
 <!--</div>-->
-
-
 <!--</template>-->
 <template>
     <JwChat-index :config="config" :taleList="chatList" :toolConfig="this.tool" @enter="sendMsg"
@@ -44,7 +42,7 @@
       return {
         friendId: "",
         roomAvatar:"",
-        messageContent: " ",
+        messageContent: " ",//保持空格，否则报null错
         roomName: "",
         roomId: "",
         idTag: "",
@@ -56,17 +54,17 @@
           show: ["history", "img"],
           callback: this.toolEvent,
           showEmoji: true
-        },
-        config: {
-          img: this.roomAvatar,
-          name: this.roomName,
-          dept: "live your life with passion.",
-          // callback: this.headerEvent
         }
         /**/
       };
     },
     computed: {
+      //项目初始时候元素没有挂载上 加个空判断
+      config () {
+        const { avatar: img = "", roomName: name = "null" } = this.chatObject || {};
+        const dept = 'dept';
+        return { img, name, dept }
+      },
       ...mapGetters([
         "jwt",
         "chatObject",
@@ -76,7 +74,9 @@
 
     beforeDestroy() {
       this.socket.disconnect();
+
     },
+
     created() {
       this.roomName = this.chatObject.roomName;
       this.roomAvatar = this.chatObject.avatar;
@@ -90,6 +90,7 @@
     },
 
     mounted() {
+
       this.socket.on("connect", data => {
         console.log("connected");
       });

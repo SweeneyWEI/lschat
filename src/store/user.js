@@ -1,5 +1,7 @@
 const user = {
   state: {
+    applyTimer:"",
+    messageTimer:"",
     jwt: '',
     friendApplyList: [],
     userList:'',
@@ -18,9 +20,25 @@ const user = {
       roomName: "",
       idTag: "",
       avatar:""
-    }
+    },
+    messageDotUsers:[]
   },
   getters: {
+    applyTimer: state => {
+      let applyTimer = state.applyTimer;
+      if (!applyTimer) {
+        applyTimer = JSON.parse(window.localStorage.getItem('applyTimer') || null)
+      }
+      return applyTimer
+    },
+
+    messageTimer: state => {
+      let messageTimer = state.messageTimer;
+      if (!messageTimer) {
+        messageTimer = JSON.parse(window.localStorage.getItem('messageTimer') || null)
+      }
+      return messageTimer
+    },
 
     jwt: state => {
       let jwt = state.jwt;
@@ -56,27 +74,44 @@ const user = {
     friendApplyList: state => {
       let friendApplyList = state.friendApplyList;
       if (!friendApplyList.length) {
-        friendApplyList = JSON.parse(window.sessionStorage.getItem('friendApplyList') || null)
+        friendApplyList = JSON.parse(window.localStorage.getItem('friendApplyList') || null)
       }
       return friendApplyList
     },
     userList: state => {
       let userList = state.userList;
       if (!userList.length) {
-        userList = JSON.parse(window.sessionStorage.getItem('userList') || null)
+        userList = JSON.parse(window.localStorage.getItem('userList') || null)
       }
       return userList
     },
     groupList: state => {
       let groupList = state.groupList;
       if (!groupList.length) {
-        groupList = JSON.parse(window.sessionStorage.getItem('groupList') || null)
+        groupList = JSON.parse(window.localStorage.getItem('groupList') || null)
       }
       return groupList
+    },
+    messageDotUsers: state => {
+      let messageDotUsers = state.messageDotUsers;
+      if (!messageDotUsers.length) {
+        messageDotUsers = JSON.parse(window.localStorage.getItem('messageDotUsers') || null)
+      }
+      return messageDotUsers
     },
 
   },
   mutations: {
+    //好友申请定时器
+    setApplyTimer: (state, applyTimer) => {
+      state.applyTimer = applyTimer;
+      window.localStorage.setItem('applyTimer', JSON.stringify(applyTimer));
+    },
+    //消息定时器
+    setMessageTimer: (state, messageTimer) => {
+      state.messageTimer = messageTimer;
+      window.localStorage.setItem('messageTimer', JSON.stringify(messageTimer));
+    },
 //缓存jwt
     setJwt: (state, jwt) => {
       state.jwt = jwt;
@@ -100,18 +135,23 @@ const user = {
     //缓存好友申请
     setFriendApplys: (state, friendApplyList) => {
       state.friendApplyList = friendApplyList;
-      window.sessionStorage.setItem('friendApplyList', JSON.stringify(friendApplyList));
+      window.localStorage.setItem('friendApplyList', JSON.stringify(friendApplyList));
     },
     //缓存好友列表
     setUserList: (state, userList) => {
       state.userList = userList;
-      window.sessionStorage.setItem('userList', JSON.stringify(userList));
+      window.localStorage.setItem('userList', JSON.stringify(userList));
     },
     //缓存群列表
     setGroupList: (state, groupList) => {
       state.groupList = groupList;
-      window.sessionStorage.setItem('groupList', JSON.stringify(groupList));
+      window.localStorage.setItem('groupList', JSON.stringify(groupList));
     },
+  },
+  //缓存新来消息用户
+  setMessageDotUsers: (state, messageDotUsers) => {
+    state.messageDotUsers = messageDotUsers;
+    window.localStorage.setItem('messageDotUsers', JSON.stringify(messageDotUsers));
   },
   actions: {}
 };

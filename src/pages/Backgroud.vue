@@ -5,13 +5,19 @@
         <tabs/>
         <div id="showList">
             <ul v-if="tabPage === 'friend' " class="infinite-list">
-                <li v-for="item in this.userList" class="infinite-list-item" :key="item.friendId"
-                    @click="goChat(item)">{{item.name}}
+                <li v-for="(item, index) in this.userList" class="infinite-list-item" :key="item.friendId"
+                    @click="goChat(item, index)">
+                    <el-badge is-dot>
+                        <el-avatar :size="25" :src="item.avatar"/>
+                    </el-badge>
+                    {{item.name}}
                 </li>
             </ul>
             <ul v-else-if="tabPage === 'group' " class="infinite-list">
-                <li v-for="item in this.groupList" class="infinite-list-item" :key="item.groupId"
-                    @click="goChat(item)">{{item.groupName}}
+                <li v-for="(item, index) in this.groupList" class="infinite-list-item" :key="item.groupId"
+                    @click="goChat(item, index)">
+                    <el-avatar :size="25" :src="item.avatar"/>
+                    {{item.groupName}}
                 </li>
             </ul>
         </div>
@@ -32,7 +38,7 @@
   import { mapGetters } from "vuex";
   import TheHeader from "./TheHeader";
   import Tabs from "./Tabs";
-  import { getUserList, scheduleFriendApply, notAllowedApply } from "../api/index";
+  import { getUserList, scheduleFriendApply, notAllowedApply, messageAlert } from "../api/index";
   import { mixin } from "../mixins";
 
 
@@ -46,13 +52,13 @@
     mixins: [mixin],
     data() {
       return {
-        timer: "",
+        dotFlag: 0,
         chatObject: {
-          friendId:0,
+          friendId: 0,
           roomId: "",
           roomName: "",
           idTag: "",
-          avatar:""
+          avatar: ""
         }
       };
     },
@@ -62,19 +68,27 @@
         "friendApplyList",
         "tabPage",
         "userList",
-        "groupList"
+        "groupList",
+        "messageDotUsers"
       ])
     },
+    //
+    // watch: {
+    //   messageDotUsers: function() {
+    //     this.dotFlag = this.messageDotUsers.length;
+    //     console.log("dotFlag ："+this.dotFlag);
+    //   }
+    // },
 
     created() {
       this.getUserList();
       this.getNotAllowedApply();
     },
     mounted() {
-      this.timer = setInterval(this.getUserApply, 10000);
-    },
-    beforeDestroy() {
-      clearInterval(this.timer);
+      let applyTimer = setInterval(this.getUserApply, 3000);
+      let messageTimer = setInterval(this.scheduleMessage, 2000);
+      this.$store.commit("setApplyTimer", applyTimer);
+      this.$store.commit("setMessageTimer", messageTimer);
     },
 
     methods: {
@@ -100,12 +114,17 @@
       },
 
       // 打开对话框建立长链接
-      goChat(item) {
+      goChat(item, index) {
         let roomId;
         let roomName;
         let friendId;
         let idTag = "chatId";
         if (this.tabPage === "friend") {
+          //判断是否有未读消息
+          if (!this.checkMessageDot) {
+            this.messageDotUsers.splice(index, 1);
+            this.$store.commit("setMessageDotUsers", this.messageDotUsers);
+          }
           friendId = item.friendId;
           roomId = item.chatId;
           roomName = item.name;
@@ -155,7 +174,7 @@
         notAllowedApply()
           .then(res => {
             if (res.code === 0) {
-              //TODO 将未通过的好友申请依然展示在信息提示处
+              //将未通过的好友申请依然展示在信息提示处
               if (res.result.length > 0) {
                 for (let i = 0; i < res.result.length; i++) {
                   let friendName = res.result[i].name;
@@ -172,7 +191,36 @@
           })
           .catch(failResponse => {
           });
-      }
+      },
+//轮询实时消息
+      scheduleMessage() {
+        messageAlert()
+          .then(res => {
+            if (res.code === 0) {
+              //提示消息来临
+              if (res.result.length > 0) {
+                for (let i = 0; i < res.result.length; i++) {
+                  this.messageDotUsers.push(res.result[i].friendId);
+                  this.$message.info(res.result[i].userName + "来消息了！");
+                }
+                this.$store.commit("setMessageDotUsers", this.messageDotUsers);
+              }
+            } else if (res.code === 2001) {
+              this.notify("登录失败", res.result);
+              _this.goLogin();
+            }
+          })
+          .catch(failResponse => {
+          });
+      },
+
+// //判断用户是否有未读消息，展示小红点(true:隐藏，false:展示)
+//       checkMessageDot(friendId) {
+//         let find = this.messageDotUsers.find(item => item === friendId);
+//         console.log("小红点检测:" + find);
+//         return find === undefined;
+//
+//       }
     }
   };
 </script>

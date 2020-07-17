@@ -26,12 +26,20 @@
   import LoginLogo from "../components/LoginLogo";
   import { loginIn } from "../api/index";
   import { mixin } from "../mixins";
+  import { mapGetters } from "vuex";
 
   //每个文件中只能有一个export default，对外暴露import获取
   export default {
     name: "login-in",
     components: {
       LoginLogo
+    },
+
+    computed: {
+      ...mapGetters([
+        "applyTimer",
+        "messageTimer"
+      ])
     },
 
     //mixins 公用方法或组建供引用
@@ -78,15 +86,15 @@
 
     //created:在模板渲染成html前调用，即通常初始化某些属性值，然后再渲染成视图
     //mouted 在模板渲染成html后调用，通常是初始化页面完成后，再对html的dom节点进行一些需要的操作
-    // mounted () {
-    //   this.changeIndex('登录')
-    // },
+    created () {
+      //清除定时器
+      clearInterval(this.messageTimer);
+      clearInterval(this.applyTimer);
+    },
 
     //在methods中定义方法，让v-on指令来接收（调用）
     methods: {
-      // changeIndex (value) {
-      //   this.$store.commit('setActiveName', value)
-      // },
+
   handleLoginIn() {
     let _this = this;
     let params = new URLSearchParams();
@@ -101,10 +109,7 @@
         loginIn(userdata)
           .then(res => {
             if (res.code === 0) {
-              this.$message({
-                message: "登录成功",
-                type: "success"
-              });
+              this.$message.success("登录成功");
               _this.setUserMsg(res);
               setTimeout(function () {
                 _this.$router.push({path: "/backgroud"});
@@ -127,7 +132,7 @@
         this.userInfo.email = res.result.email;
         this.userInfo.birthday = res.result.birthday;
 
-        this.$store.commit('setUserInfo', this.userInfo);
+        this.$store.commit("setUserInfo", this.userInfo);
       },
 
       //借助router.push跳转页面

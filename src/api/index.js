@@ -57,4 +57,8 @@ export function notAllowedApply(params) {
 export function agreeApply(params) {
   return postWithJwt("lc/uo/agree/friendRequest",params);
 }
+//消息实时监听
+export function messageAlert(params) {
+  return postWithJwt("lc/uo/schedule/message",params);
+}
 
