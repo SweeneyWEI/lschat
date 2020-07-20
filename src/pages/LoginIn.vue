@@ -79,7 +79,8 @@
           email:"",
           userName:"",
           birthday:"",
-          userId:""
+          userId:"",
+          avatar:""
         }
       };
     },
@@ -126,10 +127,11 @@
       setUserMsg (res) {
         //vuex Vue 的状态管理工具 可以作为公共数据缓存使用
         this.userInfo.userId = res.result.userId;
-        this.userInfo.name = res.result.name;
+        this.userInfo.userName = res.result.name;
         this.userInfo.phone = res.result.phone;
         this.userInfo.email = res.result.email;
         this.userInfo.birthday = res.result.birthday;
+        this.userInfo.avatar = res.result.avatar;
 
         this.$store.commit("setUserInfo", this.userInfo);
       },

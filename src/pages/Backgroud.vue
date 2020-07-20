@@ -11,15 +11,18 @@
                         <el-avatar :size="25" :src="item.avatar"/>
                     </el-badge>
                     {{item.name}}
-                    <el-dropdown @command="handleCommand" style="float: right;">
+                    <el-dropdown style="float: right;">
                         <span>
                             <i class="el-icon-more" style="font-size: 23px;"></i>
                         </span>
                         <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item command="card">好友信息</el-dropdown-item>
-                            <el-dropdown-item command="delete" divided>删除好友</el-dropdown-item>
+                            <el-dropdown-item @click.native="handleCommand('card',item.friendId)">好友信息
+                            </el-dropdown-item>
+                            <el-dropdown-item @click.native="handleCommand('delete',item.friendId)" divided>删除好友
+                            </el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
+
                     <el-divider></el-divider>
                 </li>
             </ul>
@@ -28,14 +31,18 @@
                     @click="goChat(item, index)">
                     <el-avatar :size="25" :src="item.avatar"/>
                     {{item.groupName}}
-                    <el-dropdown @command="handleGroupCommand" style="float: right;">
+                    <el-dropdown style="float: right;">
                         <span class="el-dropdown-link">
                             <i class="el-icon-more" style="font-size: 23px;"></i>
                         </span>
                         <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item command="card">群信息</el-dropdown-item>
-                            <el-dropdown-item command="delete" divided>删除群</el-dropdown-item>
-                            <el-dropdown-item command="addMember" divided>拉好友入群</el-dropdown-item>
+                            <el-dropdown-item @click.native="handleGroupCommand('card',item.groupId)">群信息
+                            </el-dropdown-item>
+                            <el-dropdown-item @click.native="handleGroupCommand('delete',item.groupId)" divided>删除群
+                            </el-dropdown-item>
+                            <el-dropdown-item @click.native="handleGroupCommand('addMember',item.groupId)" divided>
+                                拉好友入群
+                            </el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
                     <el-divider></el-divider>
@@ -43,42 +50,91 @@
             </ul>
         </div>
 
-        <div id="addDialog">
+        <div id="deleteFriend">
             <el-dialog
                     title="删除好友"
-                    :visible.sync="dialogVisible"
+                    :visible.sync="deleteVisible"
                     width="30%">
                 <span>
-                    <!--<el-image style="width: 100px; height: 100px" :src="this.friendInfo.avatar" :fit="fill"></el-image>-->
+                    <el-image style="width: 100px; height: 100px" :src="this.friendInfo.avatar"></el-image>
                     <br>
                     <label style="display: inline-block;width: 100%;">用户名称: {{this.friendInfo.friendName}}</label>
                     <br>
                     <label style="display: inline-block;width: 100%;">用户手机号: {{this.friendInfo.friendPhone}}</label>
                 </span>
                 <span slot="footer" class="dialog-footer">
-    <el-button @click="dialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="deleteFriend(this.friendInfo.friendId)">删除好友</el-button>
-  </span>
+                    <el-button @click="deleteVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="deleteFriend">删除好友</el-button>
+                </span>
             </el-dialog>
         </div>
-        <!--<div v-else="tabPage === 'selfCenter' " id="userInfo">-->
-        <!--<label style="display: inline-block;width: 100%;">{{this.userName}}</label>-->
-        <!--<br>-->
-        <!--<label style="display: inline-block;width: 100%;">{{this.phone}}</label>-->
-        <!--<br>-->
-        <!--<label style="display: inline-block;width: 100%;">{{this.email}}</label>-->
-        <!--<br>-->
-        <!--<label style="display: inline-block;width: 100%;">{{this.birthday}}</label>-->
-        <!--<br>-->
-        <!--</div>-->
+
+        <div id="friendInfo">
+            <el-dialog
+                    title="好友信息"
+                    :visible.sync="userInfoVisible"
+                    width="30%">
+                <span>
+                    <el-image style="width: 100px; height: 100px" :src="this.friendInfo.avatar"></el-image>
+                    <br>
+                    <label style="display: inline-block;width: 100%;">用户名称: {{this.friendInfo.friendName}}</label>
+                    <br>
+                    <label style="display: inline-block;width: 100%;">用户手机号: {{this.friendInfo.friendPhone}}</label>
+                    <br>
+                    <label style="display: inline-block;width: 100%;">用户邮箱: {{this.friendInfo.friendEmail}}</label>
+                    <br>
+                    <label style="display: inline-block;width: 100%;">用户生日: {{this.friendInfo.birthday}}</label>
+                </span>
+
+                <span slot="footer" class="dialog-footer">
+                    <el-button @click="userInfoVisible = false">好 的</el-button>
+                </span>
+            </el-dialog>
+        </div>
+
+        <div id="userCenter" v-if="tabPage === 'selfCenter'" class="selfCenter">
+
+            <el-card class="box-card">
+
+                昵称<el-input :placeholder=this.userInfo.userName v-model="updateUserInfo.updateName"></el-input>
+                <el-divider></el-divider>
+                <br>
+                手机号<el-input :placeholder=this.userInfo.phone v-model="updateUserInfo.updatePhone"></el-input>
+                <el-divider></el-divider>
+                <br>
+                邮箱<el-input :placeholder=this.userInfo.email v-model="updateUserInfo.updateEmail"></el-input>
+                <el-divider></el-divider>
+                <br>
+                生日<el-input :placeholder=this.userInfo.birthday v-model="updateUserInfo.updateBirthday"></el-input>
+                <el-divider></el-divider>
+                <br>
+            </el-card>
+
+            <el-button style="position: fixed;width: 100%">修改个人信息</el-button>
+            <br>
+            <el-button style="position: fixed;width: 100%;margin-top: 20px">创建群</el-button>
+            <br>
+            <el-button style="position: fixed;width: 100%;margin-top: 40px" @click.native="goLogout">退出登录</el-button>
+
+        </div>
+
     </div>
+
 </template>
 <script>
 
   import { mapGetters } from "vuex";
   import TheHeader from "./TheHeader";
   import Tabs from "./Tabs";
-  import { getUserList, scheduleFriendApply, notAllowedApply, messageAlert, getUserInfo, deleteFriendRequest } from "../api/index";
+  import {
+    getUserList,
+    scheduleFriendApply,
+    notAllowedApply,
+    messageAlert,
+    getUserInfo,
+    deleteFriendRequest,
+    logout
+  } from "../api/index";
   import { mixin } from "../mixins";
 
 
@@ -101,14 +157,22 @@
           idTag: "",
           avatar: ""
         },
-        friendInfo:{
-          friendId:"",
-          avatar:"",
-          friendName:"",
-          friendPhone:"",
-          friendEmail:""
+        friendInfo: {
+          friendId: "",
+          avatar: "",
+          friendName: "",
+          friendPhone: "",
+          friendEmail: "",
+          birthday: ""
         },
-        dialogVisible: false
+        updateUserInfo: {
+          updateName: "",
+          updateBirthday: "",
+          updatePhone: "",
+          updateEmail: ""
+        },
+        deleteVisible: false,
+        userInfoVisible: false
       };
     },
     computed: {
@@ -276,15 +340,11 @@
         console.log("小红点检测:" + find);
         return find === undefined;
 
-      }
-    },
+      },
+
 //好友操作
-    handleCommand(command) {
-      if (command === "card") {
+      handleCommand(command, friendId) {
 
-//TODO 学生信息卡
-
-      } else if (command === "delete") {
         let params = new URLSearchParams();
         params.append("friendId", friendId);
         getUserInfo(params)
@@ -295,8 +355,7 @@
               this.friendInfo.friendPhone = res.result.phone;
               this.friendInfo.avatar = res.result.avatar;
               this.friendInfo.friendEmail = res.result.email;
-              //将弹窗弹出
-              this.dialogVisible = true;
+              this.friendInfo.birthday = res.result.birthday;
 
             } else if (res.code === 2001) {
               this.notify("登录失败", res.result);
@@ -307,35 +366,62 @@
           })
           .catch(failResponse => {
           });
-      }
-    },
-//群操作
-    handleGroupCommand(command) {
-      //TODO 群操作
-    },
-//删除好友
-    deleteFriend(friendId){
-      this.dialogVisible = false;
 
-      let params = new URLSearchParams();
-      params.append("friendId", friendId);
-      deleteFriendRequest(params)
-        .then(res => {
-          if (res.code === 0) {
-            this.$message.success("好友已删除");
-          } else if (res.code === 2001) {
-            this.notify("登录失败", res.result);
-            this.goLogin();
-          } else {
-            this.notify("服务异常");
-          }
-        })
-        .catch(failResponse => {
-        });
+        if (command === "card") {
+          this.userInfoVisible = true;
+        } else if (command === "delete") {
+          //将弹窗弹出
+          this.deleteVisible = true;
+        }
+      },
+//群操作
+      handleGroupCommand(command) {
+        //TODO 群操作
+      },
+//删除好友
+      deleteFriend() {
+        this.deleteVisible = false;
+        let friendId = this.friendInfo.friendId;
+
+        console.log("即将删除好友 friendId:" + friendId);
+        let params = new URLSearchParams();
+        params.append("friendId", friendId);
+        deleteFriendRequest(params)
+          .then(res => {
+            if (res.code === 0) {
+              this.$message.success("好友已删除");
+            } else if (res.code === 2001) {
+              this.notify("登录失败", res.result);
+              this.goLogin();
+            } else {
+              this.notify("服务异常");
+            }
+          })
+          .catch(failResponse => {
+          });
+      },
+
+      goLogout() {
+        logout()
+          .then(res => {
+            if (res.code === 0) {
+              this.goLogin();
+            } else if (res.code === 2001) {
+              this.notify("登录失败", res.result);
+              this.goLogin();
+            } else {
+              console.log("服务异常");
+              this.notify("服务异常");
+
+            }
+          })
+          .catch(failResponse => {
+          });
+      }
     }
   };
 </script>
 
 <style lang="scss" scoped>
-    @import '../assets/css/app.scss';
+    @import "../assets/css/app.scss";
 </style>

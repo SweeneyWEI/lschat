@@ -37,8 +37,6 @@
                 </el-dropdown-menu>
             </el-dropdown>
 
-            <el-button type="primary" icon="el-icon-circle-close" @click.native="goLogout"></el-button>
-
         </div>
         <div id="addDialog">
             <el-dialog
@@ -61,7 +59,7 @@
 
 <script>
   import { mixin } from "../mixins";
-  import { getQueryUser, getUserInfo, addFriendApply, agreeApply, logout } from "../api/index";
+  import { getQueryUser, getUserInfo, addFriendApply, agreeApply } from "../api/index";
   import { mapGetters } from "vuex";
 
   export default {
@@ -213,25 +211,8 @@
 
       goLogin() {
         this.$router.push({ path: "/" });
-      },
-
-      goLogout() {
-        logout()
-          .then(res => {
-            if (res.code === 0) {
-              this.goLogin();
-            } else if (res.code === 2001) {
-              this.notify("登录失败", res.result);
-              this.goLogin();
-            } else {
-              console.log("服务异常");
-              this.notify("服务异常");
-
-            }
-          })
-          .catch(failResponse => {
-          });
       }
+
     }
   };
 </script>

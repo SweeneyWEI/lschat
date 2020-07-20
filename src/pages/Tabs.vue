@@ -26,7 +26,8 @@
           email:"",
           userName:"",
           birthday:"",
-          userId:""
+          userId:"",
+          avatar:""
         }
       };
     },
@@ -80,6 +81,7 @@
                 this.userInfo.phone = res.result.phone;
                 this.userInfo.email = res.result.email;
                 this.userInfo.birthday = res.result.birthday;
+                this.userInfo.avatar = res.result.avatar;
                 this.$store.commit("setUserInfo", this.userInfo);
 
               } else if (res.code === 2001) {
