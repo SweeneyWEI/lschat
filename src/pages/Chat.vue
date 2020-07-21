@@ -9,6 +9,7 @@
   import { mixin } from "../mixins";
   import io from "socket.io-client";
   import { mapGetters } from "vuex";
+  import {getChatContentList} from "../api/index";
 
   const options = {
     reconnection: true,      //当连接终止后，是否允许Socket.io自动进行重连
@@ -39,7 +40,8 @@
           show: ["history", "img"],
           callback: this.toolEvent,
           showEmoji: true
-        }
+        },
+        pageIndex:0
         /**/
       };
     },
@@ -68,6 +70,9 @@
       this.roomId = this.chatObject.roomId;
       this.idTag = this.chatObject.idTag;
       this.friendId = this.chatObject.friendId;
+
+      this.loadChatContent();
+
       console.log("准备建立长连接...");
       console.log("roomId:" + this.chatObject.roomId + "idTag:" + this.chatObject.idTag);
       let wsUrl = "http://10.50.10.76:5555" + "?jwt=" + this.jwt + "&" + this.chatObject.idTag + "=" + this.chatObject.roomId;
@@ -145,6 +150,45 @@
         console.log("roomId:" + this.roomId + "idTag:" + this.idTag + "message:" + messageContent);
 
         this.socket.json.emit("lcMessage", messageContent);
+      },
+
+//加载聊天记录
+      loadChatContent(){
+        let params = new URLSearchParams();
+        params.append("chatId", this.roomId);
+        params.append("pageIndex", this.pageIndex);
+
+        getChatContentList(params)
+          .then(res => {
+            if (res.code === 0) {
+              for (let i = 0; i < res.result.length; i++) {
+
+                let content = res.result[i];
+
+                let mine = false;
+                if (content.fromUser === this.userInfo.userId) {
+                  mine = true;
+                }
+
+                let chatContent = {
+                  "date": content.receiveTime,
+                  "text": { "text": content.content },
+                  "mine": mine,
+                  "name": content.fromUserName,
+                  "img": content.fromUserAvatar
+                };
+                this.chatList.push(chatContent);
+              }
+
+            } else if (res.code === 2001) {
+              this.notify("登录失败", res.result);
+              this.goLogin();
+            } else {
+              this.notify("服务异常");
+            }
+          })
+          .catch(failResponse => {
+          });
       }
     },
     /**/

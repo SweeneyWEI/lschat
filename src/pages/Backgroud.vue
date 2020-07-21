@@ -93,24 +93,31 @@
         </div>
 
         <div id="userCenter" v-if="tabPage === 'selfCenter'" class="selfCenter">
+            <el-form :inline="true" :model="updateUserInfo">
+                <div>
+                    <el-form-item label="昵称">
+                        <el-input  :placeholder=this.userInfo.userName v-model="updateUserInfo.updateName"></el-input>
+                    </el-form-item>
+                </div>
+                <div>
+                    <el-form-item label="手机号">
+                        <el-input :placeholder=this.userInfo.phone v-model="updateUserInfo.updatePhone"></el-input>
+                    </el-form-item>
+                </div>
+                <div>
+                    <el-form-item label="邮箱">
+                        <el-input :placeholder=this.userInfo.email v-model="updateUserInfo.updateEmail"></el-input>
+                    </el-form-item>
+                </div>
+                <div>
+                    <el-form-item label="生日">
+                        <el-date-picker type="date" :placeholder=this.userInfo.birthday v-model="updateUserInfo.updateBirthday" style="width: 100%;"></el-date-picker>
+                    </el-form-item>
+                </div>
+            </el-form>
 
-            <el-card class="box-card">
 
-                昵称<el-input :placeholder=this.userInfo.userName v-model="updateUserInfo.updateName"></el-input>
-                <el-divider></el-divider>
-                <br>
-                手机号<el-input :placeholder=this.userInfo.phone v-model="updateUserInfo.updatePhone"></el-input>
-                <el-divider></el-divider>
-                <br>
-                邮箱<el-input :placeholder=this.userInfo.email v-model="updateUserInfo.updateEmail"></el-input>
-                <el-divider></el-divider>
-                <br>
-                生日<el-input :placeholder=this.userInfo.birthday v-model="updateUserInfo.updateBirthday"></el-input>
-                <el-divider></el-divider>
-                <br>
-            </el-card>
-
-            <el-button style="position: fixed;width: 100%">修改个人信息</el-button>
+            <el-button style="position: fixed;width: 100%" @click.native="updateInfo">修改个人信息</el-button>
             <br>
             <el-button style="position: fixed;width: 100%;margin-top: 20px">创建群</el-button>
             <br>
@@ -133,7 +140,8 @@
     messageAlert,
     getUserInfo,
     deleteFriendRequest,
-    logout
+    logout,
+    updateUserInfo
   } from "../api/index";
   import { mixin } from "../mixins";
 
@@ -166,10 +174,12 @@
           birthday: ""
         },
         updateUserInfo: {
+          userId:"",
           updateName: "",
           updateBirthday: "",
           updatePhone: "",
-          updateEmail: ""
+          updateEmail: "",
+          avatar: ""
         },
         deleteVisible: false,
         userInfoVisible: false
@@ -317,7 +327,7 @@
               if (res.result.length > 0) {
                 for (let i = 0; i < res.result.length; i++) {
                   this.messageUserList.push(res.result[i].friendId);
-                  this.$message.info(res.result[i].userName + "来消息了！");
+                  this.$message.info(res.result[i].userName + ":"+ res.result[i].content);
                 }
                 this.$store.commit("setMessageDotUsersList", this.messageUserList);
                 // this.$children[0].$children[0].$forceUpdate();
@@ -383,7 +393,6 @@
         this.deleteVisible = false;
         let friendId = this.friendInfo.friendId;
 
-        console.log("即将删除好友 friendId:" + friendId);
         let params = new URLSearchParams();
         params.append("friendId", friendId);
         deleteFriendRequest(params)
@@ -406,6 +415,43 @@
           .then(res => {
             if (res.code === 0) {
               this.goLogin();
+            } else if (res.code === 2001) {
+              this.notify("登录失败", res.result);
+              this.goLogin();
+            } else {
+              console.log("服务异常");
+              this.notify("服务异常");
+
+            }
+          })
+          .catch(failResponse => {
+          });
+      },
+
+      updateInfo(){
+        let d = this.updateUserInfo.updateBirthday;
+        let datetime = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+
+        let updateInfo = {
+          "userId" : this.userInfo.userId,
+          "name" : this.updateUserInfo.updateName,
+          "phone" : this.updateUserInfo.updatePhone,
+          "email" : this.updateUserInfo.updateEmail,
+          "birthday" : datetime,
+          "avatar" : this.updateUserInfo.avatar
+        };
+        updateUserInfo(updateInfo)
+          .then(res => {
+            if (res.code === 0) {
+              this.userInfo.userId = res.result.userId;
+              this.userInfo.userName = res.result.name;
+              this.userInfo.phone = res.result.phone;
+              this.userInfo.email = res.result.email;
+              this.userInfo.birthday = res.result.birthday;
+              this.userInfo.avatar = res.result.avatar;
+
+              this.$store.commit("setUserInfo", this.userInfo);
+              this.$message.success("用户信息已更新");
             } else if (res.code === 2001) {
               this.notify("登录失败", res.result);
               this.goLogin();

@@ -97,9 +97,6 @@
 
   handleLoginIn() {
     let _this = this;
-    let params = new URLSearchParams();
-        params.append("phoneOrEmail", this.loginForm.phoneOrEmail);
-        params.append("password", this.loginForm.password);
 
         let userdata = {
           "phoneOrEmail" : this.loginForm.phoneOrEmail,

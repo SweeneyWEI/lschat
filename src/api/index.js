@@ -28,6 +28,11 @@ export function getGroupList(params) {
   return postWithJwt("lc/ri/groupList", params);
 }
 
+//获取聊天记录
+export function getChatContentList(params) {
+  return postWithJwt("lc/ri/chatContent", params);
+}
+
 //获取用户信息
 export function getUserInfo(params) {
   return postWithJwt("lc/uo/userInfo", params);
@@ -64,5 +69,10 @@ export function messageAlert(params) {
 //删除好友
 export function deleteFriendRequest(params) {
   return postWithJwt("lc/uo/delete/friend",params);
+}
+
+//更新好友信息
+export function updateUserInfo(params) {
+  return postWithJwt("lc/uo/update/userInfo",params);
 }
 

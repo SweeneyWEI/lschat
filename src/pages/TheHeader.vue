@@ -8,7 +8,7 @@
                     <div class="header-search">
                         <input type="text" placeholder="输入用户name或phone搜索" @keyup.enter="goSearch()" v-model="keywords"
                                @blur.capture="blurList">
-                        <div class="search-btn" @click="goSearch()">
+                        <div class="search-btn" @click="goSearch">
                             <el-button type="primary" icon="el-icon-search">搜索</el-button>
                         </div>
                         <div id=searchResult class="search">
@@ -22,20 +22,21 @@
                     </div>
                 </li>
             </ul>
-
-            <el-dropdown v-if="this.applySize>0">
-                <el-badge v-bind:value="this.applySize" class="item">
-                    <el-button type="primary">
-                        好友申请<i class="el-icon-arrow-down el-icon--right"></i>
-                    </el-button>
-                </el-badge>
-                <el-dropdown-menu></el-dropdown-menu>
-                <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item v-for="(item,index) in this.friendApplyList" :key="item.userId"
-                                      @click.native="handleApply(item.userId, index)">{{item.name}}
-                    </el-dropdown-item>
-                </el-dropdown-menu>
-            </el-dropdown>
+            <div>
+                <el-dropdown v-if="this.applySize>0">
+                    <el-badge v-bind:value="this.applySize" class="item">
+                        <el-button type="primary">
+                            <i class="el-icon-user"></i>
+                        </el-button>
+                    </el-badge>
+                    <el-dropdown-menu></el-dropdown-menu>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item v-for="(item,index) in this.friendApplyList" :key="item.userId"
+                                          @click.native="handleApply(item.userId, index)">{{item.name}}
+                        </el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
+            </div>
 
         </div>
         <div id="addDialog">
@@ -74,13 +75,13 @@
     watch: {
       friendApplyList: function() {
         this.applySize = this.friendApplyList.length;
-        console.log("更新申请数字applySize:"+this.applySize);
+        console.log("更新申请数字applySize:" + this.applySize);
       }
     },
 
     data() {
       return {
-        applySize:0,
+        applySize: 0,
         username: "",
         keywords: "",
         showCode: "",
@@ -190,7 +191,7 @@
               //删除已经处理过的请求
               let applyList = this.friendApplyList;
               //使用splice删除数据是，在v-for组件下，需要指定:key，否则splice不生效
-              applyList.splice(index,1);
+              applyList.splice(index, 1);
               this.$store.commit("setFriendApplys", applyList);
               this.$message({
                 message: "你们已经成为好友",
