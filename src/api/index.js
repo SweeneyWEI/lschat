@@ -76,3 +76,8 @@ export function updateUserInfo(params) {
   return postWithJwt("lc/uo/update/userInfo",params);
 }
 
+//创建群
+export function createGroupRequest(params) {
+  return postWithJwt("/lc/go/createGroup",params);
+}
+

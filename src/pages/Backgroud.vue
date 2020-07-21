@@ -96,7 +96,7 @@
             <el-form :inline="true" :model="updateUserInfo">
                 <div>
                     <el-form-item label="昵称">
-                        <el-input  :placeholder=this.userInfo.userName v-model="updateUserInfo.updateName"></el-input>
+                        <el-input :placeholder=this.userInfo.userName v-model="updateUserInfo.updateName"></el-input>
                     </el-form-item>
                 </div>
                 <div>
@@ -111,7 +111,8 @@
                 </div>
                 <div>
                     <el-form-item label="生日">
-                        <el-date-picker type="date" :placeholder=this.userInfo.birthday v-model="updateUserInfo.updateBirthday" style="width: 100%;"></el-date-picker>
+                        <el-date-picker type="date" :placeholder=this.userInfo.birthday
+                                        v-model="updateUserInfo.updateBirthday" style="width: 100%;"></el-date-picker>
                     </el-form-item>
                 </div>
             </el-form>
@@ -119,10 +120,16 @@
 
             <el-button style="position: fixed;width: 100%" @click.native="updateInfo">修改个人信息</el-button>
             <br>
-            <el-button style="position: fixed;width: 100%;margin-top: 20px">创建群</el-button>
+            <el-button style="position: fixed;width: 100%;margin-top: 20px" @click.native="createGroupInit">创建群
+            </el-button>
             <br>
             <el-button style="position: fixed;width: 100%;margin-top: 40px" @click.native="goLogout">退出登录</el-button>
 
+        </div>
+
+        <div v-if="showCreateGroup">
+            <el-transfer v-model="createGroupUserIdList" :data="createGroupUserList"></el-transfer>
+            <el-button class="el-icon-circle-check" @click.native="createGroup"></el-button>
         </div>
 
     </div>
@@ -141,7 +148,8 @@
     getUserInfo,
     deleteFriendRequest,
     logout,
-    updateUserInfo
+    updateUserInfo,
+    createGroupRequest
   } from "../api/index";
   import { mixin } from "../mixins";
 
@@ -174,7 +182,7 @@
           birthday: ""
         },
         updateUserInfo: {
-          userId:"",
+          userId: "",
           updateName: "",
           updateBirthday: "",
           updatePhone: "",
@@ -182,7 +190,10 @@
           avatar: ""
         },
         deleteVisible: false,
-        userInfoVisible: false
+        userInfoVisible: false,
+        createGroupUserList: [],
+        createGroupUserIdList: [],
+        showCreateGroup: false
       };
     },
     computed: {
@@ -327,7 +338,7 @@
               if (res.result.length > 0) {
                 for (let i = 0; i < res.result.length; i++) {
                   this.messageUserList.push(res.result[i].friendId);
-                  this.$message.info(res.result[i].userName + ":"+ res.result[i].content);
+                  this.$message.info(res.result[i].userName + ":" + res.result[i].content);
                 }
                 this.$store.commit("setMessageDotUsersList", this.messageUserList);
                 // this.$children[0].$children[0].$forceUpdate();
@@ -428,17 +439,17 @@
           });
       },
 
-      updateInfo(){
+      updateInfo() {
         let d = this.updateUserInfo.updateBirthday;
-        let datetime = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+        let datetime = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
 
         let updateInfo = {
-          "userId" : this.userInfo.userId,
-          "name" : this.updateUserInfo.updateName,
-          "phone" : this.updateUserInfo.updatePhone,
-          "email" : this.updateUserInfo.updateEmail,
-          "birthday" : datetime,
-          "avatar" : this.updateUserInfo.avatar
+          "userId": this.userInfo.userId,
+          "name": this.updateUserInfo.updateName,
+          "phone": this.updateUserInfo.updatePhone,
+          "email": this.updateUserInfo.updateEmail,
+          "birthday": datetime,
+          "avatar": this.updateUserInfo.avatar
         };
         updateUserInfo(updateInfo)
           .then(res => {
@@ -463,6 +474,36 @@
           })
           .catch(failResponse => {
           });
+      },
+
+      //创建群
+      createGroup() {
+        createGroupRequest(this.createGroupUserIdList)
+          .then(res => {
+            if (res.code === 0) {
+              this.$message.success("用户群创建成功");
+            } else if (res.code === 2001) {
+              this.notify("登录失败", res.result);
+              this.goLogin();
+            } else {
+              console.log("服务异常");
+              this.notify("服务异常");
+            }
+          })
+          .catch(failResponse => {
+          });
+        this.showCreateGroup = false;
+      },
+
+      //创建群初始化数据
+      createGroupInit() {
+        for (let i = 0; i < this.userList.length; i++) {
+          this.createGroupUserList.push({
+            key : this.userList[i].friendId,
+            label : this.userList[i].name
+          });
+        }
+        this.showCreateGroup = true;
       }
     }
   };
