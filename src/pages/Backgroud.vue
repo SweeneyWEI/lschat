@@ -5,8 +5,8 @@
         <tabs/>
         <div id="showList">
             <ul v-if="tabPage === 'friend' " class="infinite-list">
-                <li v-for="(item, index) in this.userList" class="infinite-list-item" :key="item.friendId"
-                    @click="goChat(item, index)">
+                <li v-for="item in this.userList" class="infinite-list-item" :key="item.friendId"
+                    @click="goChat(item)">
                     <el-badge :hidden="checkMessageDot(item.friendId)" is-dot>
                         <el-avatar :size="25" :src="item.avatar"/>
                     </el-badge>
@@ -27,8 +27,8 @@
                 </li>
             </ul>
             <ul v-else-if="tabPage === 'group' " class="infinite-list">
-                <li v-for="(item, index) in this.groupList" class="infinite-list-item" :key="item.groupId"
-                    @click="goChat(item, index)">
+                <li v-for="item in this.groupList" class="infinite-list-item" :key="item.groupId"
+                    @click="goChat(item)">
                     <el-avatar :size="25" :src="item.avatar"/>
                     {{item.groupName}}
                     <el-dropdown style="float: right;">
@@ -36,10 +36,22 @@
                             <i class="el-icon-more" style="font-size: 23px;"></i>
                         </span>
                         <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item @click.native="handleGroupCommand('card',item.groupId)">群信息
+                            <el-dropdown-item v-if="item.ownerState === true"
+                                              @click.native="handleGroupCommand('updateGname',item.groupId)">修改群名
                             </el-dropdown-item>
-                            <el-dropdown-item @click.native="handleGroupCommand('delete',item.groupId)" divided>删除群
+
+                            <el-dropdown-item v-if="item.ownerState === true"
+                                              @click.native="handleGroupCommand('kickOne',item.groupId)" divided>踢人
                             </el-dropdown-item>
+
+                            <el-dropdown-item v-if="item.ownerState === true"
+                                              @click.native="handleGroupCommand('delete',item.groupId)" divided>解散群
+                            </el-dropdown-item>
+
+                            <el-dropdown-item @click.native="handleGroupCommand('quitGroup',item.groupId)" divided>
+                                退出群
+                            </el-dropdown-item>
+
                             <el-dropdown-item @click.native="handleGroupCommand('addMember',item.groupId)" divided>
                                 拉好友入群
                             </el-dropdown-item>
@@ -48,6 +60,19 @@
                     <el-divider></el-divider>
                 </li>
             </ul>
+        </div>
+
+        <div id="deleteGroup">
+            <el-dialog
+                    title="解散群"
+                    :visible.sync="deleteGroupVisible"
+                    width="30%">
+                <span>确定要解散群吗？</span>
+                <span slot="footer" class="dialog-footer">
+                    <el-button @click="deleteGroupVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="deleteGroup">确 定</el-button>
+                </span>
+            </el-dialog>
         </div>
 
         <div id="deleteFriend">
@@ -92,44 +117,64 @@
             </el-dialog>
         </div>
 
+
         <div id="userCenter" v-if="tabPage === 'selfCenter'" class="selfCenter">
             <el-form :inline="true" :model="updateUserInfo">
                 <div>
-                    <el-form-item label="昵称">
-                        <el-input :placeholder=this.userInfo.userName v-model="updateUserInfo.updateName"></el-input>
+                    <el-form-item style="width: 90%;position: fixed;" label="昵称">
+                        <el-input :placeholder=this.userInfo.userName v-model="updateUserInfo.updateName"
+                        ></el-input>
                     </el-form-item>
                 </div>
                 <div>
-                    <el-form-item label="手机号">
-                        <el-input :placeholder=this.userInfo.phone v-model="updateUserInfo.updatePhone"></el-input>
+                    <el-form-item style="width: 90%;position: fixed;margin-top: 50px" label="手机号">
+                        <el-input :placeholder=this.userInfo.phone v-model="updateUserInfo.updatePhone"
+                        ></el-input>
                     </el-form-item>
                 </div>
                 <div>
-                    <el-form-item label="邮箱">
-                        <el-input :placeholder=this.userInfo.email v-model="updateUserInfo.updateEmail"></el-input>
+                    <el-form-item style="width: 90%;position: fixed;margin-top: 100px" label="邮箱">
+                        <el-input :placeholder=this.userInfo.email v-model="updateUserInfo.updateEmail"
+                        ></el-input>
                     </el-form-item>
                 </div>
                 <div>
-                    <el-form-item label="生日">
+                    <el-form-item style="width: 90%;position: fixed;margin-top: 150px" label="生日">
                         <el-date-picker type="date" :placeholder=this.userInfo.birthday
-                                        v-model="updateUserInfo.updateBirthday" style="width: 100%;"></el-date-picker>
+                                        v-model="updateUserInfo.updateBirthday"
+                                        style="width: 100%;"></el-date-picker>
                     </el-form-item>
                 </div>
             </el-form>
 
 
-            <el-button style="position: fixed;width: 100%" @click.native="updateInfo">修改个人信息</el-button>
-            <br>
-            <el-button style="position: fixed;width: 100%;margin-top: 20px" @click.native="createGroupInit">创建群
+            <el-button style="position: fixed;width: 100%;;margin-top: 200px" @click.native="updateInfo">修改个人信息
             </el-button>
             <br>
-            <el-button style="position: fixed;width: 100%;margin-top: 40px" @click.native="goLogout">退出登录</el-button>
+            <el-button style="position: fixed;width: 100%;margin-top: 220px" @click.native="createGroupInit">创建群
+            </el-button>
+            <br>
+            <el-button style="position: fixed;width: 100%;margin-top: 240px" @click.native="goLogout">退出登录</el-button>
 
         </div>
 
-        <div v-if="showCreateGroup">
-            <el-transfer v-model="createGroupUserIdList" :data="createGroupUserList"></el-transfer>
-            <el-button class="el-icon-circle-check" @click.native="createGroup"></el-button>
+        <div v-if="showCreateGroup" class="groupInit">
+            <el-card class="box-card">
+                <el-transfer v-model="createGroupUserIdList" :data="createGroupUserList"
+                             :titles="['好友列表','拉群']"></el-transfer>
+                <el-button class="el-icon-circle-close" @click.native="quitCreateGroup"></el-button>
+                <el-button class="el-icon-circle-check" @click.native="createGroup" style="float: right"></el-button>
+            </el-card>
+        </div>
+
+
+        <div v-if="showInviteGroup" class="groupInit">
+            <el-card class="box-card">
+                <el-transfer v-model="inviteGroupUserIdList" :data="inviteGroupUserList"
+                             :titles="['好友列表','拉群']"></el-transfer>
+                <el-button class="el-icon-circle-close" @click.native="quitInviteGroup"></el-button>
+                <el-button class="el-icon-circle-check" @click.native="inviteGroup" style="float: right"></el-button>
+            </el-card>
         </div>
 
     </div>
@@ -149,7 +194,12 @@
     deleteFriendRequest,
     logout,
     updateUserInfo,
-    createGroupRequest
+    createGroupRequest,
+    updateGNameRequest,
+    deleteGroupRequest,
+    quitGroupRequest,
+    groupInviteRequest,
+    getFriendsNotInGroupList
   } from "../api/index";
   import { mixin } from "../mixins";
 
@@ -191,9 +241,15 @@
         },
         deleteVisible: false,
         userInfoVisible: false,
+        deleteGroupVisible: false,
+        deleteGroupId:"",
         createGroupUserList: [],
         createGroupUserIdList: [],
-        showCreateGroup: false
+        inviteGroupUserList: [],
+        inviteGroupUserIdList: [],
+        showCreateGroup: false,
+        showInviteGroup: false,
+        inviteGroupId: ""
       };
     },
     computed: {
@@ -244,7 +300,7 @@
       },
 
       // 打开对话框建立长链接
-      goChat(item, index) {
+      goChat(item) {
         let roomId;
         let roomName;
         let friendId;
@@ -396,9 +452,124 @@
         }
       },
 //群操作
-      handleGroupCommand(command) {
-        //TODO 群操作
+      handleGroupCommand(command, groupId) {
+        switch (command) {
+          case "updateGname":
+            this.updateGroupName(groupId);
+            break;
+          case "kickOne":
+            break;
+          case "delete":
+            this.deleteGroupVisible = true;
+            this.deleteGroupId = groupId;
+            break;
+          case "addMember":
+            this.inviteGroupInit(groupId);
+            break;
+          case "quitGroup":
+            this.quitGroup(groupId);
+            break;
+        }
       },
+      //退群
+      quitGroup(groupId){
+        let params = new URLSearchParams();
+        params.append("groupId", groupId);
+        quitGroupRequest(params)
+          .then(res => {
+            if (res.code === 0) {
+              this.$message.success("已退群");
+            } else if (res.code === 2001) {
+              this.notify("登录失败", res.result);
+              this.goLogin();
+            } else {
+              this.notify("服务异常");
+            }
+          })
+          .catch(failResponse => {
+          });
+      },
+
+      //拉人入群初始化数据
+      inviteGroupInit(groupId) {
+        this.inviteGroupUserList = [];
+        this.inviteGroupId = groupId;
+        let params = new URLSearchParams();
+        params.append("groupId", groupId);
+
+        getFriendsNotInGroupList(params)
+          .then(res => {
+            if (res.result.length>0){
+
+              //请求接口获取好友列表除去该群已经存在的
+              for (let i = 0; i < res.result.length; i++) {
+                this.inviteGroupUserList.push({
+                  key: res.result[i].friendId,
+                  label: res.result[i].name
+                });
+              }
+              this.showInviteGroup = true;
+            }
+          });
+
+      },
+      //退出拉人入群操作
+      quitInviteGroup() {
+        setTimeout(() => {
+            this.showInviteGroup = false;
+          },
+          200);
+      },
+      //拉人入群
+      inviteGroup(){
+        let inviteGroup = {
+          "groupId": this.inviteGroupId,
+          "userIdList": this.inviteGroupUserIdList
+        };
+        groupInviteRequest(inviteGroup)
+          .then(res => {
+            if (res.code === 0) {
+              this.$message.success("已入群");
+            } else if (res.code === 2001) {
+              this.notify("登录失败", res.result);
+              this.goLogin();
+            } else {
+              this.notify("服务异常");
+            }
+            this.showInviteGroup = false;
+          })
+          .catch(failResponse => {
+          });
+      },
+//更新群name
+      updateGroupName(groupId) {
+        this.$prompt("请输入新的群名称", "更改群名", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消"
+          // inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+          // inputErrorMessage: '邮箱格式不正确'
+        }).then(({ value }) => {
+
+          let params = new URLSearchParams();
+          params.append("groupId", groupId);
+          params.append("groupName", value);
+
+          updateGNameRequest(params)
+            .then(res => {
+              if (res.code === 0) {
+                this.$message.success("群名修改成功");
+              } else if (res.code === 2001) {
+                this.notify("登录失败", res.result);
+                this.goLogin();
+              } else {
+                this.notify("服务异常");
+              }
+            });
+        }).catch(() => {
+          this.$message.info("取消输入");
+        });
+      },
+
 //删除好友
       deleteFriend() {
         this.deleteVisible = false;
@@ -497,13 +668,40 @@
 
       //创建群初始化数据
       createGroupInit() {
+        this.createGroupUserList = [];
         for (let i = 0; i < this.userList.length; i++) {
           this.createGroupUserList.push({
-            key : this.userList[i].friendId,
-            label : this.userList[i].name
+            key: this.userList[i].friendId,
+            label: this.userList[i].name
           });
         }
         this.showCreateGroup = true;
+      },
+      quitCreateGroup() {
+        setTimeout(() => {
+            this.showCreateGroup = false;
+          },
+          200);
+      },
+//删除群
+      deleteGroup(){
+        let params = new URLSearchParams();
+        params.append("groupId", this.deleteGroupId);
+        deleteGroupRequest(params)
+          .then(res => {
+            if (res.code === 0) {
+              this.deleteGroupVisible = false;
+              this.$message.success("群已解散");
+            } else if (res.code === 2001) {
+              this.notify("登录失败", res.result);
+              this.goLogin();
+            } else {
+              console.log("服务异常");
+              this.notify("服务异常");
+            }
+          })
+          .catch(failResponse => {
+          });
       }
     }
   };

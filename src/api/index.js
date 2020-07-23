@@ -81,3 +81,33 @@ export function createGroupRequest(params) {
   return postWithJwt("/lc/go/createGroup",params);
 }
 
+//更新群名
+export function updateGNameRequest(params) {
+  return postWithJwt("/lc/go/updateGroupName",params);
+}
+
+//删除群
+export function deleteGroupRequest(params) {
+  return postWithJwt("/lc/go/deleteGroup",params);
+}
+
+//退出群
+export function quitGroupRequest(params) {
+  return postWithJwt("/lc/go/quitGroup",params);
+}
+
+//群拉人
+export function groupInviteRequest(params) {
+  return postWithJwt("/lc/go/addGroupMember",params);
+}
+
+//群详细信息
+export function getGroupInfoList(params) {
+  return postWithJwt("/lc/ri/groupInfo",params);
+}
+
+//查询好友列表除去群成员
+export function getFriendsNotInGroupList(params) {
+  return postWithJwt("/lc/ri/groupAbsent/friend",params);
+}
+

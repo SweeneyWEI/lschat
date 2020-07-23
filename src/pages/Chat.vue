@@ -1,6 +1,7 @@
 <template>
     <JwChat-index :config="config" :taleList="chatList" :toolConfig="this.tool" @enter="sendMsg"
-            v-model="messageContent">
+                  v-model="messageContent">
+        <JwChat-rightbox :config="rightConfig" @click="rightClick"></JwChat-rightbox>
     </JwChat-index>
 </template>
 
@@ -9,7 +10,7 @@
   import { mixin } from "../mixins";
   import io from "socket.io-client";
   import { mapGetters } from "vuex";
-  import {getChatContentList} from "../api/index";
+  import { getChatContentList, getGroupInfoList } from "../api/index";
 
   const options = {
     reconnection: true,      //当连接终止后，是否允许Socket.io自动进行重连
@@ -27,7 +28,7 @@
     data() {
       return {
         friendId: "",
-        roomAvatar:"",
+        roomAvatar: "",
         messageContent: " ",//保持空格，否则报null错
         roomName: "",
         roomId: "",
@@ -41,16 +42,23 @@
           callback: this.toolEvent,
           showEmoji: true
         },
-        pageIndex:0
+        pageIndex: 0,
+
+        rightConfig: {
+          listTip: "小可爱",
+          tip: "空空如也",
+          notice: "接着奏乐，接着舞～",
+          list: []
+        }
         /**/
       };
     },
     computed: {
       //项目初始时候元素没有挂载上 加个空判断
-      config () {
+      config() {
         const { avatar: img = "", roomName: name = "null" } = this.chatObject || {};
-        const dept = 'dept';
-        return { img, name, dept }
+        const dept = "dept";
+        return { img, name, dept };
       },
       ...mapGetters([
         "jwt",
@@ -72,6 +80,13 @@
       this.friendId = this.chatObject.friendId;
 
       this.loadChatContent();
+
+      if (this.idTag === "groupId") {
+        this.rightConfig.listTip = "members";
+        this.rightConfig.tip = "群公告";
+        this.rightConfig.notice = "【公告】让我们一起摇摆～ ";
+        this.loadGroupMembers();
+      }
 
       console.log("准备建立长连接...");
       console.log("roomId:" + this.chatObject.roomId + "idTag:" + this.chatObject.idTag);
@@ -153,7 +168,7 @@
       },
 
 //加载聊天记录
-      loadChatContent(){
+      loadChatContent() {
         let params = new URLSearchParams();
         params.append("chatId", this.roomId);
         params.append("pageIndex", this.pageIndex);
@@ -189,15 +204,53 @@
           })
           .catch(failResponse => {
           });
+      },
+      /**/
+      toolEvent(type) {
+        console.log("tools", type);
+      },
+      headerEvent(type) {
+        console.log("header", type);
+      },
+
+      rightClick(type) {
+        console.log("rigth", type);
+      },
+
+//加载群成员信息
+      loadGroupMembers() {
+        let params = new URLSearchParams();
+        params.append("groupId", this.roomId);
+        getGroupInfoList(params)
+          .then(res => {
+            if (res.code === 0) {
+              for (let i = 0; i < res.result.groupMembers.length; i++) {
+
+                let content = res.result.groupMembers[i];
+                let userName = content.userName;
+
+                if (content.role === 1) {
+                  userName = userName + "(群主)";
+                }
+                let groupMember = {
+                  "name": userName,
+                  "img": content.avatar
+                };
+                this.rightConfig.list.push(groupMember);
+              }
+
+            } else if (res.code === 2001) {
+              this.notify("登录失败", res.result);
+              this.goLogin();
+            } else {
+              this.notify("服务异常");
+            }
+          })
+          .catch(failResponse => {
+          });
       }
-    },
-    /**/
-    toolEvent(type) {
-      console.log("tools", type);
-    },
-    headerEvent(type) {
-      console.log("header", type);
     }
+
     /**/
   };
 </script>
