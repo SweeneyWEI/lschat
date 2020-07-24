@@ -214,7 +214,7 @@
       },
 
       rightClick(type) {
-        console.log("rigth", type);
+        console.log("right userId:", type);
       },
 
 //加载群成员信息
@@ -228,6 +228,7 @@
 
                 let content = res.result.groupMembers[i];
                 let userName = content.userName;
+                let userId = content.userId;
 
                 if (content.role === 1) {
                   userName = userName + "(群主)";
