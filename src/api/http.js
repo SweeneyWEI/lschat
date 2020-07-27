@@ -16,7 +16,7 @@ axios.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8';
 //   }
 // } else {
   //dev 开发环境
-  axios.defaults.baseURL = 'http://172.21.0.2:8132';
+  axios.defaults.baseURL = 'http://www.lcchat.cn/';
 // }
 
 // 响应拦截器
