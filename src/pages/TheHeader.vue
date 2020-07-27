@@ -117,6 +117,9 @@
     },
 
     methods: {
+      /**
+       * 搜索用户
+       */
       goSearch() {
         let params = new URLSearchParams();
         params.append("phoneOrName", this.keywords);
@@ -183,7 +186,9 @@
       goBack(index) {
         this.$router.go(index);
       },
-
+      /**
+       * 好友申请
+       */
       addFriend() {
         this.dialogVisible = false;
         let params = new URLSearchParams();
@@ -207,7 +212,9 @@
           .catch(failResponse => {
           });
       },
-
+      /**
+       * 处理好友请求
+       */
       handleApply(userId, index) {
 
         this.applyFriendId = userId;

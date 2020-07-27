@@ -278,7 +278,9 @@
     },
 
     methods: {
-      //获取好友列表
+      /**
+       * 获取好友列表
+       */
       getUserList() {
         let _this = this;
         getUserList()
@@ -299,7 +301,9 @@
         this.$router.push({ path: "/" });
       },
 
-      // 打开对话框建立长链接
+      /**
+       * 打开对话框建立长链接
+       */
       goChat(item) {
         let roomId;
         let roomName;
@@ -335,7 +339,9 @@
         this.$router.push({ path: "/chat" });
       },
 
-//轮询好友申请
+      /**
+       * 轮询好友申请
+       */
       getUserApply() {
         console.log(this.tabPage);
         let _this = this;
@@ -360,7 +366,9 @@
           .catch(failResponse => {
           });
       },
-      //获取未通过的好友申请
+      /**
+       * 获取未通过的好友申请
+       */
       getNotAllowedApply() {
         let _this = this;
         notAllowedApply()
@@ -384,7 +392,9 @@
           .catch(failResponse => {
           });
       },
-//轮询实时消息
+      /**
+       * 轮询实时消息
+       */
       scheduleMessage() {
         let _this = this;
         messageAlert()
@@ -407,8 +417,11 @@
           .catch(failResponse => {
           });
       },
-
-//判断用户是否有未读消息，展示小红点(true:隐藏，false:展示)
+      /**
+       * 判断用户是否有未读消息，展示小红点(true:隐藏，false:展示)
+       * @param friendId
+       * @returns {boolean}
+       */
       checkMessageDot(friendId) {
         if (this.messageDotUsersList === null || this.messageDotUsersList.length === 0) {
           return true;
@@ -418,8 +431,11 @@
         return find === undefined;
 
       },
-
-//好友操作
+      /**
+       * 好友操作
+       * @param command
+       * @param friendId
+       */
       handleCommand(command, friendId) {
 
         let params = new URLSearchParams();
@@ -451,7 +467,11 @@
           this.deleteVisible = true;
         }
       },
-//群操作
+      /**
+       * 群操作
+       * @param command
+       * @param groupId
+       */
       handleGroupCommand(command, groupId) {
         switch (command) {
           case "updateGname":
@@ -471,7 +491,10 @@
             break;
         }
       },
-      //退群
+      /**
+       * 退群
+       * @param groupId
+       */
       quitGroup(groupId){
         let params = new URLSearchParams();
         params.append("groupId", groupId);
@@ -490,7 +513,10 @@
           });
       },
 
-      //拉人入群初始化数据
+      /**
+       * 拉人入群初始化数据
+       * @param groupId
+       */
       inviteGroupInit(groupId) {
         this.inviteGroupUserList = [];
         this.inviteGroupId = groupId;
@@ -513,14 +539,18 @@
           });
 
       },
-      //退出拉人入群操作
+      /**
+       * 退出拉人入群操作
+       */
       quitInviteGroup() {
         setTimeout(() => {
             this.showInviteGroup = false;
           },
           200);
       },
-      //拉人入群
+      /**
+       * 拉人入群
+       */
       inviteGroup(){
         let inviteGroup = {
           "groupId": this.inviteGroupId,
@@ -541,7 +571,10 @@
           .catch(failResponse => {
           });
       },
-//更新群name
+      /**
+       * 更新群name
+       * @param groupId
+       */
       updateGroupName(groupId) {
         this.$prompt("请输入新的群名称", "更改群名", {
           confirmButtonText: "确定",
@@ -570,7 +603,9 @@
         });
       },
 
-//删除好友
+      /**
+       * 删除好友
+       */
       deleteFriend() {
         this.deleteVisible = false;
         let friendId = this.friendInfo.friendId;
@@ -609,7 +644,9 @@
           .catch(failResponse => {
           });
       },
-
+      /**
+       * 更新用户信息
+       */
       updateInfo() {
         let d = this.updateUserInfo.updateBirthday;
         let datetime = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
@@ -647,7 +684,9 @@
           });
       },
 
-      //创建群
+      /**
+       * 创建群
+       */
       createGroup() {
         createGroupRequest(this.createGroupUserIdList)
           .then(res => {
@@ -665,8 +704,9 @@
           });
         this.showCreateGroup = false;
       },
-
-      //创建群初始化数据
+      /**
+       * 创建群初始化数据
+       */
       createGroupInit() {
         this.createGroupUserList = [];
         for (let i = 0; i < this.userList.length; i++) {
@@ -683,7 +723,10 @@
           },
           200);
       },
-//删除群
+
+      /**
+       * 删除群
+       */
       deleteGroup(){
         let params = new URLSearchParams();
         params.append("groupId", this.deleteGroupId);
