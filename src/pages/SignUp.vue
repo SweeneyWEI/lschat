@@ -92,5 +92,5 @@
 </script>
 
 <style lang="scss" scoped>
-    @import '../assets/css/sign-up.scss';
+    @import "../assets/css/sign-up.scss";
 </style>

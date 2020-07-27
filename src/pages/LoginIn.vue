@@ -142,5 +142,5 @@
 </script>
 
 <style lang="scss" scoped>
-    @import '../assets/css/login-in.scss';
+    @import "../assets/css/login-in.scss";
 </style>
