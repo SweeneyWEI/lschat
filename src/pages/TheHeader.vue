@@ -37,8 +37,8 @@
                     </el-dropdown-menu>
                 </el-dropdown>
             </div>
-
         </div>
+
         <div id="addDialog">
             <el-dialog
                     title="用户信息简介"
@@ -51,7 +51,24 @@
                 </span>
                 <span slot="footer" class="dialog-footer">
     <el-button @click="dialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="addFriend()">加为好友</el-button>
+    <el-button type="primary" @click="addFriend">加好友</el-button>
+  </span>
+            </el-dialog>
+        </div>
+
+        <div id="agreeDialog">
+            <el-dialog
+                    title="用户信息简介"
+                    :visible.sync="agreeDialogVisible"
+                    width="30%">
+                <span>
+                    <label style="display: inline-block;width: 100%;">用户名称: {{this.friendInfo.friendName}}</label>
+                    <br>
+                    <label style="display: inline-block;width: 100%;">用户手机号: {{this.friendInfo.friendPhone}}</label>
+                </span>
+                <span slot="footer" class="dialog-footer">
+    <el-button @click="agreeDialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="agreeFriendApply">加为好友</el-button>
   </span>
             </el-dialog>
         </div>
@@ -92,7 +109,10 @@
           friendPhone: "",
           friendEmail: ""
         },
-        dialogVisible: false
+        dialogVisible: false,
+        agreeDialogVisible: false,
+        applyFriendId:"",
+        applyIndex:0
       };
     },
 
@@ -126,6 +146,15 @@
         this.showCode = false;
         let params = new URLSearchParams();
         params.append("friendId", friendId);
+        this.queryUserInfo(params);
+        //将弹窗弹出
+        this.dialogVisible = true;
+      },
+      /**
+       * 查询用户信息
+       * @param params
+       */
+      queryUserInfo(params){
         getUserInfo(params)
           .then(res => {
             if (res.code === 0) {
@@ -133,8 +162,6 @@
               this.friendInfo.friendName = res.result.name;
               this.friendInfo.friendPhone = res.result.phone;
               this.friendInfo.friendEmail = res.result.email;
-              //将弹窗弹出
-              this.dialogVisible = true;
 
             } else if (res.code === 2001) {
               this.notify("登录失败", res.result);
@@ -183,11 +210,29 @@
 
       handleApply(userId, index) {
 
+        this.applyFriendId = userId;
+        this.applyIndex = index;
+
         let params = new URLSearchParams();
         params.append("friendId", userId);
+        //查询用户信息
+        this.queryUserInfo(params);
+        //将弹窗弹出
+        this.agreeDialogVisible = true;
+      },
+      /**
+       * 同意加好友申请
+       */
+      agreeFriendApply(){
+        let userId = this.applyFriendId;
+        let index = this.applyIndex;
+        let params = new URLSearchParams();
+        params.append("friendId", userId);
+
         agreeApply(params)
           .then(res => {
             if (res.code === 0) {
+              this.agreeDialogVisible = false;
               //删除已经处理过的请求
               let applyList = this.friendApplyList;
               //使用splice删除数据是，在v-for组件下，需要指定:key，否则splice不生效
