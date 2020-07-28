@@ -135,25 +135,25 @@
                     </el-upload>
                 </div>
                 <div>
-                    <el-form-item style="width: 90%;position: fixed;" label="昵称">
+                    <el-form-item style="width: 90%;position: fixed;margin-top: 20px" label="昵称">
                         <el-input :placeholder=this.userInfo.userName v-model="updateUserInfo.updateName"
                         ></el-input>
                     </el-form-item>
                 </div>
                 <div>
-                    <el-form-item style="width: 90%;position: fixed;margin-top: 50px" label="手机号">
+                    <el-form-item style="width: 90%;position: fixed;margin-top: 70px" label="手机号">
                         <el-input :placeholder=this.userInfo.phone v-model="updateUserInfo.updatePhone"
                         ></el-input>
                     </el-form-item>
                 </div>
                 <div>
-                    <el-form-item style="width: 90%;position: fixed;margin-top: 100px" label="邮箱">
+                    <el-form-item style="width: 90%;position: fixed;margin-top: 120px" label="邮箱">
                         <el-input :placeholder=this.userInfo.email v-model="updateUserInfo.updateEmail"
                         ></el-input>
                     </el-form-item>
                 </div>
                 <div>
-                    <el-form-item style="width: 90%;position: fixed;margin-top: 150px" label="生日">
+                    <el-form-item style="width: 90%;position: fixed;margin-top: 170px" label="生日">
                         <el-date-picker type="date" :placeholder=this.userInfo.birthday
                                         v-model="updateUserInfo.updateBirthday"
                                         style="width: 100%;"></el-date-picker>
@@ -162,13 +162,13 @@
             </el-form>
 
 
-            <el-button style="position: fixed;width: 100%;;margin-top: 200px" @click.native="updateInfo">修改个人信息
+            <el-button style="position: fixed;width: 100%;;margin-top: 250px" @click.native="updateInfo">修改个人信息
             </el-button>
             <br>
-            <el-button style="position: fixed;width: 100%;margin-top: 220px" @click.native="createGroupInit">创建群
+            <el-button style="position: fixed;width: 100%;margin-top: 270px" @click.native="createGroupInit">创建群
             </el-button>
             <br>
-            <el-button style="position: fixed;width: 100%;margin-top: 240px" @click.native="goLogout">退出登录</el-button>
+            <el-button style="position: fixed;width: 100%;margin-top: 290px" @click.native="goLogout">退出登录</el-button>
 
         </div>
 
@@ -663,9 +663,9 @@
        */
       updateInfo() {
         let d = this.updateUserInfo.updateBirthday;
+        console.log("datetime:"+d);
         let datetime = "";
-        if (d === null || d === undefined) {
-        }else {
+        if (d !== "") {
           datetime = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
         }
 
