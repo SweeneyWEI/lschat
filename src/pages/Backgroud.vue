@@ -121,6 +121,20 @@
         <div id="userCenter" v-if="tabPage === 'selfCenter'" class="selfCenter">
             <el-form :inline="true" :model="updateUserInfo">
                 <div>
+                    <el-upload
+                            class="upload-demo"
+                            :show-file-list="false"
+                            multiple
+                            :limit="1"
+                            accept="image/jpeg,image/png,image/jpg"
+                            :http-request="uploadAvatar"
+                             action="string">
+                        <el-button size="small">
+                            <el-image style="width: 50px; height: 50px" :src="this.userInfo.avatar"></el-image>
+                        </el-button>
+                    </el-upload>
+                </div>
+                <div>
                     <el-form-item style="width: 90%;position: fixed;" label="昵称">
                         <el-input :placeholder=this.userInfo.userName v-model="updateUserInfo.updateName"
                         ></el-input>
@@ -199,7 +213,8 @@
     deleteGroupRequest,
     quitGroupRequest,
     groupInviteRequest,
-    getFriendsNotInGroupList
+    getFriendsNotInGroupList,
+    uploadAvatarRequest
   } from "../api/index";
   import { mixin } from "../mixins";
 
@@ -236,8 +251,7 @@
           updateName: "",
           updateBirthday: "",
           updatePhone: "",
-          updateEmail: "",
-          avatar: ""
+          updateEmail: ""
         },
         deleteVisible: false,
         userInfoVisible: false,
@@ -649,25 +663,26 @@
        */
       updateInfo() {
         let d = this.updateUserInfo.updateBirthday;
-        let datetime = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+        let datetime = "";
+        if (d === null || d === undefined) {
+        }else {
+          datetime = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+        }
 
         let updateInfo = {
           "userId": this.userInfo.userId,
           "name": this.updateUserInfo.updateName,
           "phone": this.updateUserInfo.updatePhone,
           "email": this.updateUserInfo.updateEmail,
-          "birthday": datetime,
-          "avatar": this.updateUserInfo.avatar
+          "birthday": datetime
         };
         updateUserInfo(updateInfo)
           .then(res => {
             if (res.code === 0) {
-              this.userInfo.userId = res.result.userId;
               this.userInfo.userName = res.result.name;
               this.userInfo.phone = res.result.phone;
               this.userInfo.email = res.result.email;
               this.userInfo.birthday = res.result.birthday;
-              this.userInfo.avatar = res.result.avatar;
 
               this.$store.commit("setUserInfo", this.userInfo);
               this.$message.success("用户信息已更新");
@@ -745,6 +760,21 @@
           })
           .catch(failResponse => {
           });
+      },
+      /**
+       * 更换头像
+       * @param params
+       */
+      uploadAvatar(params){
+        let formData = new FormData();
+        formData.append("file", params.file);
+        uploadAvatarRequest(formData)
+          .then(res=>{
+            if (res.code === 0) {
+              this.userInfo.avatar = res.result.avatar;
+              this.$store.commit("setUserInfo", this.userInfo);
+            }
+          })
       }
     }
   };

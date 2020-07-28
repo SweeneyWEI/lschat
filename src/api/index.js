@@ -1,5 +1,5 @@
 /* eslint-disable*/
-import { get, post, postWithJwt } from "./http";
+import { get, post, postFormData, postWithJwt } from "./http";
 
 // =======================> 用户 API
 
@@ -109,5 +109,10 @@ export function getGroupInfoList(params) {
 //查询好友列表除去群成员
 export function getFriendsNotInGroupList(params) {
   return postWithJwt("/lc/ri/groupAbsent/friend",params);
+}
+
+//上传头像
+export function uploadAvatarRequest(params) {
+  return postFormData("lc/uo/upload/picture",params);
 }
 
