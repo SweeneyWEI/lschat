@@ -32,6 +32,11 @@
       };
     },
     methods: {
+      /**
+       * 处理tag点击事件
+       * @param tab
+       * @param event
+       */
       handleClick(tab, event) {
         let tabName = tab.name;
         this.$store.commit("setTabPage",tabName);

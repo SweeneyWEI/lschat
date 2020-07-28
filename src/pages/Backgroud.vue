@@ -121,25 +121,39 @@
         <div id="userCenter" v-if="tabPage === 'selfCenter'" class="selfCenter">
             <el-form :inline="true" :model="updateUserInfo">
                 <div>
-                    <el-form-item style="width: 90%;position: fixed;" label="昵称">
+                    <el-upload
+                            class="upload-demo"
+                            :show-file-list="false"
+                            multiple
+                            :limit="1"
+                            accept="image/jpeg,image/png,image/jpg"
+                            :http-request="uploadAvatar"
+                             action="string">
+                        <el-button size="small">
+                            <el-image style="width: 50px; height: 50px" :src="this.userInfo.avatar"></el-image>
+                        </el-button>
+                    </el-upload>
+                </div>
+                <div>
+                    <el-form-item style="width: 90%;position: fixed;margin-top: 20px" label="昵称">
                         <el-input :placeholder=this.userInfo.userName v-model="updateUserInfo.updateName"
                         ></el-input>
                     </el-form-item>
                 </div>
                 <div>
-                    <el-form-item style="width: 90%;position: fixed;margin-top: 50px" label="手机号">
+                    <el-form-item style="width: 90%;position: fixed;margin-top: 70px" label="手机号">
                         <el-input :placeholder=this.userInfo.phone v-model="updateUserInfo.updatePhone"
                         ></el-input>
                     </el-form-item>
                 </div>
                 <div>
-                    <el-form-item style="width: 90%;position: fixed;margin-top: 100px" label="邮箱">
+                    <el-form-item style="width: 90%;position: fixed;margin-top: 120px" label="邮箱">
                         <el-input :placeholder=this.userInfo.email v-model="updateUserInfo.updateEmail"
                         ></el-input>
                     </el-form-item>
                 </div>
                 <div>
-                    <el-form-item style="width: 90%;position: fixed;margin-top: 150px" label="生日">
+                    <el-form-item style="width: 90%;position: fixed;margin-top: 170px" label="生日">
                         <el-date-picker type="date" :placeholder=this.userInfo.birthday
                                         v-model="updateUserInfo.updateBirthday"
                                         style="width: 100%;"></el-date-picker>
@@ -148,13 +162,13 @@
             </el-form>
 
 
-            <el-button style="position: fixed;width: 100%;;margin-top: 200px" @click.native="updateInfo">修改个人信息
+            <el-button style="position: fixed;width: 100%;;margin-top: 250px" @click.native="updateInfo">修改个人信息
             </el-button>
             <br>
-            <el-button style="position: fixed;width: 100%;margin-top: 220px" @click.native="createGroupInit">创建群
+            <el-button style="position: fixed;width: 100%;margin-top: 270px" @click.native="createGroupInit">创建群
             </el-button>
             <br>
-            <el-button style="position: fixed;width: 100%;margin-top: 240px" @click.native="goLogout">退出登录</el-button>
+            <el-button style="position: fixed;width: 100%;margin-top: 290px" @click.native="goLogout">退出登录</el-button>
 
         </div>
 
@@ -199,7 +213,8 @@
     deleteGroupRequest,
     quitGroupRequest,
     groupInviteRequest,
-    getFriendsNotInGroupList
+    getFriendsNotInGroupList,
+    uploadAvatarRequest
   } from "../api/index";
   import { mixin } from "../mixins";
 
@@ -236,8 +251,7 @@
           updateName: "",
           updateBirthday: "",
           updatePhone: "",
-          updateEmail: "",
-          avatar: ""
+          updateEmail: ""
         },
         deleteVisible: false,
         userInfoVisible: false,
@@ -278,7 +292,9 @@
     },
 
     methods: {
-      //获取好友列表
+      /**
+       * 获取好友列表
+       */
       getUserList() {
         let _this = this;
         getUserList()
@@ -299,7 +315,9 @@
         this.$router.push({ path: "/" });
       },
 
-      // 打开对话框建立长链接
+      /**
+       * 打开对话框建立长链接
+       */
       goChat(item) {
         let roomId;
         let roomName;
@@ -335,7 +353,9 @@
         this.$router.push({ path: "/chat" });
       },
 
-//轮询好友申请
+      /**
+       * 轮询好友申请
+       */
       getUserApply() {
         console.log(this.tabPage);
         let _this = this;
@@ -360,7 +380,9 @@
           .catch(failResponse => {
           });
       },
-      //获取未通过的好友申请
+      /**
+       * 获取未通过的好友申请
+       */
       getNotAllowedApply() {
         let _this = this;
         notAllowedApply()
@@ -384,7 +406,9 @@
           .catch(failResponse => {
           });
       },
-//轮询实时消息
+      /**
+       * 轮询实时消息
+       */
       scheduleMessage() {
         let _this = this;
         messageAlert()
@@ -407,8 +431,11 @@
           .catch(failResponse => {
           });
       },
-
-//判断用户是否有未读消息，展示小红点(true:隐藏，false:展示)
+      /**
+       * 判断用户是否有未读消息，展示小红点(true:隐藏，false:展示)
+       * @param friendId
+       * @returns {boolean}
+       */
       checkMessageDot(friendId) {
         if (this.messageDotUsersList === null || this.messageDotUsersList.length === 0) {
           return true;
@@ -418,8 +445,11 @@
         return find === undefined;
 
       },
-
-//好友操作
+      /**
+       * 好友操作
+       * @param command
+       * @param friendId
+       */
       handleCommand(command, friendId) {
 
         let params = new URLSearchParams();
@@ -451,7 +481,11 @@
           this.deleteVisible = true;
         }
       },
-//群操作
+      /**
+       * 群操作
+       * @param command
+       * @param groupId
+       */
       handleGroupCommand(command, groupId) {
         switch (command) {
           case "updateGname":
@@ -471,7 +505,10 @@
             break;
         }
       },
-      //退群
+      /**
+       * 退群
+       * @param groupId
+       */
       quitGroup(groupId){
         let params = new URLSearchParams();
         params.append("groupId", groupId);
@@ -490,7 +527,10 @@
           });
       },
 
-      //拉人入群初始化数据
+      /**
+       * 拉人入群初始化数据
+       * @param groupId
+       */
       inviteGroupInit(groupId) {
         this.inviteGroupUserList = [];
         this.inviteGroupId = groupId;
@@ -513,14 +553,18 @@
           });
 
       },
-      //退出拉人入群操作
+      /**
+       * 退出拉人入群操作
+       */
       quitInviteGroup() {
         setTimeout(() => {
             this.showInviteGroup = false;
           },
           200);
       },
-      //拉人入群
+      /**
+       * 拉人入群
+       */
       inviteGroup(){
         let inviteGroup = {
           "groupId": this.inviteGroupId,
@@ -541,7 +585,10 @@
           .catch(failResponse => {
           });
       },
-//更新群name
+      /**
+       * 更新群name
+       * @param groupId
+       */
       updateGroupName(groupId) {
         this.$prompt("请输入新的群名称", "更改群名", {
           confirmButtonText: "确定",
@@ -570,7 +617,9 @@
         });
       },
 
-//删除好友
+      /**
+       * 删除好友
+       */
       deleteFriend() {
         this.deleteVisible = false;
         let friendId = this.friendInfo.friendId;
@@ -609,28 +658,31 @@
           .catch(failResponse => {
           });
       },
-
+      /**
+       * 更新用户信息
+       */
       updateInfo() {
         let d = this.updateUserInfo.updateBirthday;
-        let datetime = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+        console.log("datetime:"+d);
+        let datetime = "";
+        if (d !== "") {
+          datetime = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+        }
 
         let updateInfo = {
           "userId": this.userInfo.userId,
           "name": this.updateUserInfo.updateName,
           "phone": this.updateUserInfo.updatePhone,
           "email": this.updateUserInfo.updateEmail,
-          "birthday": datetime,
-          "avatar": this.updateUserInfo.avatar
+          "birthday": datetime
         };
         updateUserInfo(updateInfo)
           .then(res => {
             if (res.code === 0) {
-              this.userInfo.userId = res.result.userId;
               this.userInfo.userName = res.result.name;
               this.userInfo.phone = res.result.phone;
               this.userInfo.email = res.result.email;
               this.userInfo.birthday = res.result.birthday;
-              this.userInfo.avatar = res.result.avatar;
 
               this.$store.commit("setUserInfo", this.userInfo);
               this.$message.success("用户信息已更新");
@@ -647,7 +699,9 @@
           });
       },
 
-      //创建群
+      /**
+       * 创建群
+       */
       createGroup() {
         createGroupRequest(this.createGroupUserIdList)
           .then(res => {
@@ -665,8 +719,9 @@
           });
         this.showCreateGroup = false;
       },
-
-      //创建群初始化数据
+      /**
+       * 创建群初始化数据
+       */
       createGroupInit() {
         this.createGroupUserList = [];
         for (let i = 0; i < this.userList.length; i++) {
@@ -683,7 +738,10 @@
           },
           200);
       },
-//删除群
+
+      /**
+       * 删除群
+       */
       deleteGroup(){
         let params = new URLSearchParams();
         params.append("groupId", this.deleteGroupId);
@@ -702,6 +760,21 @@
           })
           .catch(failResponse => {
           });
+      },
+      /**
+       * 更换头像
+       * @param params
+       */
+      uploadAvatar(params){
+        let formData = new FormData();
+        formData.append("file", params.file);
+        uploadAvatarRequest(formData)
+          .then(res=>{
+            if (res.code === 0) {
+              this.userInfo.avatar = res.result.avatar;
+              this.$store.commit("setUserInfo", this.userInfo);
+            }
+          })
       }
     }
   };

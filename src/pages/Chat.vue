@@ -166,8 +166,9 @@
 
         this.socket.json.emit("lcMessage", messageContent);
       },
-
-//加载聊天记录
+      /**
+       * 加载聊天记录
+       */
       loadChatContent() {
         let params = new URLSearchParams();
         params.append("chatId", this.roomId);
@@ -216,8 +217,9 @@
       rightClick(type) {
         console.log("right userId:", type);
       },
-
-//加载群成员信息
+      /**
+       * 加载群成员信息
+       */
       loadGroupMembers() {
         let params = new URLSearchParams();
         params.append("groupId", this.roomId);
@@ -252,7 +254,6 @@
       }
     }
 
-    /**/
   };
 </script>
 

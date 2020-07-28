@@ -131,3 +131,27 @@ export function post(url, data) {
     })
 }
 
+/**
+ *  post请求 formdata
+ * @param url
+ * @param data
+ * @returns {Promise<any>}
+ */
+export function postFormData(url, data) {
+  return new Promise((resolve, reject) => {
+
+    console.log(store);
+    axios.post(url, data,{
+      headers: {
+        "jwt": store.state.user.jwt,
+        "content-type": "multipart/form-data;charset=UTF-8"
+      }
+    })
+      .then(response => {
+        resolve(response.data);
+      }, err => {
+        reject(err)
+      })
+  })
+}
+
