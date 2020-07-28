@@ -283,7 +283,7 @@
     },
     mounted() {
       this.applyTimer = setInterval(this.getUserApply, 3000);
-      let messageTimer = setInterval(this.scheduleMessage, 2000);
+      let messageTimer = setInterval(this.scheduleMessage, 3000);
       this.$store.commit("setMessageTimer", messageTimer);
     },
 
