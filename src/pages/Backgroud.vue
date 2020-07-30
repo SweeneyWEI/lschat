@@ -128,7 +128,7 @@
                             :limit="1"
                             accept="image/jpeg,image/png,image/jpg"
                             :http-request="uploadAvatar"
-                             action="string">
+                            action="string">
                         <el-button size="small">
                             <el-image style="width: 50px; height: 50px" :src="this.userInfo.avatar"></el-image>
                         </el-button>
@@ -256,7 +256,7 @@
         deleteVisible: false,
         userInfoVisible: false,
         deleteGroupVisible: false,
-        deleteGroupId:"",
+        deleteGroupId: "",
         createGroupUserList: [],
         createGroupUserIdList: [],
         inviteGroupUserList: [],
@@ -417,11 +417,20 @@
               //提示消息来临
               if (res.result.length > 0) {
                 for (let i = 0; i < res.result.length; i++) {
-                  this.messageUserList.push(res.result[i].friendId);
-                  this.$message.info(res.result[i].userName + ":" + res.result[i].content);
+                  let msgContent;
+                  if (res.result[i].content.match("http")) {
+                    msgContent = "[图片]";
+                  } else {
+                    msgContent = res.result[i].content;
+                  }
+                  if (this.messageUserList.indexOf(res.result[i].friendId) > -1) {
+                    //已存在用户未读消息提醒，不添加
+                  } else {
+                    this.messageUserList.push(res.result[i].friendId);
+                    this.$store.commit("setMessageDotUsersList", this.messageUserList);
+                  }
+                  this.$message.info(res.result[i].userName + ":" + msgContent);
                 }
-                this.$store.commit("setMessageDotUsersList", this.messageUserList);
-                // this.$children[0].$children[0].$forceUpdate();
               }
             } else if (res.code === 2001) {
               this.notify("登录失败", res.result);
@@ -509,7 +518,7 @@
        * 退群
        * @param groupId
        */
-      quitGroup(groupId){
+      quitGroup(groupId) {
         let params = new URLSearchParams();
         params.append("groupId", groupId);
         quitGroupRequest(params)
@@ -539,7 +548,7 @@
 
         getFriendsNotInGroupList(params)
           .then(res => {
-            if (res.result.length>0){
+            if (res.result.length > 0) {
 
               //请求接口获取好友列表除去该群已经存在的
               for (let i = 0; i < res.result.length; i++) {
@@ -565,7 +574,7 @@
       /**
        * 拉人入群
        */
-      inviteGroup(){
+      inviteGroup() {
         let inviteGroup = {
           "groupId": this.inviteGroupId,
           "userIdList": this.inviteGroupUserIdList
@@ -663,7 +672,7 @@
        */
       updateInfo() {
         let d = this.updateUserInfo.updateBirthday;
-        console.log("datetime:"+d);
+        console.log("datetime:" + d);
         let datetime = "";
         if (d !== "") {
           datetime = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
@@ -742,7 +751,7 @@
       /**
        * 删除群
        */
-      deleteGroup(){
+      deleteGroup() {
         let params = new URLSearchParams();
         params.append("groupId", this.deleteGroupId);
         deleteGroupRequest(params)
@@ -765,16 +774,16 @@
        * 更换头像
        * @param params
        */
-      uploadAvatar(params){
+      uploadAvatar(params) {
         let formData = new FormData();
         formData.append("file", params.file);
         uploadAvatarRequest(formData)
-          .then(res=>{
+          .then(res => {
             if (res.code === 0) {
               this.userInfo.avatar = res.result.avatar;
               this.$store.commit("setUserInfo", this.userInfo);
             }
-          })
+          });
       }
     }
   };

@@ -130,9 +130,17 @@
         if (data.userId === this.userInfo.userId) {
           mine = true;
         }
+
+        let messageContent;
+        //如果是图片
+        if (data.messageContent.match("http")) {
+          messageContent = "<img data-src='" + data.messageContent + "'/>";
+        } else {
+          messageContent = data.messageContent;
+        }
         let chatContent = {
           "date": data.sendTime,
-          "text": { "text": data.messageContent },
+          "text": { "text": messageContent },
           "mine": mine,
           "name": data.userName,
           "img": data.avatar
@@ -161,9 +169,6 @@
             messageContent: this.messageContent
           };
         }
-
-        console.log("roomId:" + this.roomId + "idTag:" + this.idTag + "message:" + messageContent);
-
         this.socket.json.emit("lcMessage", messageContent);
       },
       /**
@@ -185,10 +190,17 @@
                 if (content.fromUser === this.userInfo.userId) {
                   mine = true;
                 }
+                let contentMessage;
+                //对图片的处理
+                if (content.content.match("http")) {
+                  contentMessage = "<img data-src='" + content.content + "'/>";
+                } else {
+                  contentMessage = content.content;
+                }
 
                 let chatContent = {
                   "date": content.receiveTime,
-                  "text": { "text": content.content },
+                  "text": { "text": contentMessage },
                   "mine": mine,
                   "name": content.fromUserName,
                   "img": content.fromUserAvatar
@@ -208,7 +220,25 @@
       },
       /**/
       toolEvent(type) {
-        console.log("tools", type);
+        let _this = this;
+        if (type === "img") {
+          let input = document.createElement("input");
+          input.id = "chatImg";
+          input.type = "file";
+          input.multiple = "multiple";
+          input.click();
+          input.onchange = function() {
+            let file = input.files[0];
+            let reader = new FileReader();
+            reader.readAsDataURL(file);
+
+            reader.onload = function() {           //读取完毕会自动触发，读取结果保存在result中
+              _this.messageContent = this.result;
+              _this.sendMsg();
+              _this.messageContent = " ";
+            };
+          };
+        }
       },
       headerEvent(type) {
         console.log("header", type);
@@ -251,6 +281,9 @@
           })
           .catch(failResponse => {
           });
+      },
+      goLogin() {
+        this.$router.push({ path: "/" });
       }
     }
 
