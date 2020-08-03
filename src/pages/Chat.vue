@@ -90,7 +90,7 @@
 
       console.log("准备建立长连接...");
       console.log("roomId:" + this.chatObject.roomId + "idTag:" + this.chatObject.idTag);
-      let wsUrl = "http://localhost:5555" + "?jwt=" + this.jwt + "&" + this.chatObject.idTag + "=" + this.chatObject.roomId;
+      let wsUrl = "http://10.30.54.133:5555" + "?jwt=" + this.jwt + "&" + this.chatObject.idTag + "=" + this.chatObject.roomId;
       this.socket = io.connect(wsUrl, options);
     },
 
@@ -169,7 +169,7 @@
             messageContent: this.messageContent
           };
         }
-        this.socket.json.emit("lcMessage", messageContent);
+        this.socket.emit("lcMessage", messageContent);
       },
       /**
        * 加载聊天记录
