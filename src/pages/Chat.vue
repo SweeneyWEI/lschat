@@ -61,7 +61,7 @@
         let historyConfig = {
           tip: "加载更多",
           callback: this.loadChatContent
-        }
+        };
         return { img, name, dept, historyConfig };
       },
       ...mapGetters([
