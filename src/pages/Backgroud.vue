@@ -273,7 +273,8 @@
         "tabPage",
         "userList",
         "groupList",
-        "messageDotUsersList"
+        "messageDotUsersList",
+        "messageTimer"
       ])
     },
 
@@ -433,6 +434,7 @@
                 }
               }
             } else if (res.code === 2001) {
+              clearInterval(this.messageTimer);
               this.notify("登录失败", res.result);
               _this.goLogin();
             }
