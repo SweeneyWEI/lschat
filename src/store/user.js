@@ -1,7 +1,5 @@
 const user = {
   state: {
-    applyTimer:"",
-    messageTimer:"",
     jwt: "",
     friendApplyList: [],
     userList:[],
@@ -25,21 +23,6 @@ const user = {
     messageDotUsersList:[]
   },
   getters: {
-    applyTimer: state => {
-      let applyTimer = state.applyTimer;
-      if (!applyTimer) {
-        applyTimer = JSON.parse(window.localStorage.getItem("applyTimer") || null)
-      }
-      return applyTimer
-    },
-
-    messageTimer: state => {
-      let messageTimer = state.messageTimer;
-      if (!messageTimer) {
-        messageTimer = JSON.parse(window.localStorage.getItem("messageTimer") || null)
-      }
-      return messageTimer
-    },
 
     jwt: state => {
       let jwt = state.jwt;
