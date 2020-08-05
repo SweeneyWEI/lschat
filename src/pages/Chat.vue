@@ -1,6 +1,6 @@
 <template>
     <JwChat-index :config="config" :taleList="chatList" :toolConfig="this.tool" @enter="sendMsg"
-                  v-model="messageContent">
+                  v-model="messageContent" scrollType="scroll">
         <JwChat-rightbox :config="rightConfig" @click="rightClick"></JwChat-rightbox>
     </JwChat-index>
 </template>
@@ -58,7 +58,11 @@
       config() {
         const { avatar: img = "", roomName: name = "null" } = this.chatObject || {};
         const dept = "dept";
-        return { img, name, dept };
+        let historyConfig = {
+          tip: "加载更多",
+          callback: this.loadChatContent
+        }
+        return { img, name, dept, historyConfig };
       },
       ...mapGetters([
         "jwt",
@@ -69,7 +73,7 @@
 
     beforeDestroy() {
       this.socket.disconnect();
-
+      this.pageIndex = 0;
     },
 
     created() {
@@ -182,6 +186,7 @@
         getChatContentList(params)
           .then(res => {
             if (res.code === 0) {
+              this.chatList=[];
               for (let i = 0; i < res.result.length; i++) {
 
                 let content = res.result[i];
@@ -206,6 +211,7 @@
                   "img": content.fromUserAvatar
                 };
                 this.chatList.push(chatContent);
+                this.pageIndex+=1;
               }
 
             } else if (res.code === 2001) {

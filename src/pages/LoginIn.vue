@@ -1,23 +1,28 @@
 <template>
-    <div class="login-in">
-        <login-logo/>
-        <div class="login">
-            <div class="login-head">
-                <span>帐号登录</span>
-            </div>
-            <el-form :model="loginForm" status-icon :rules="rules" ref="loginForm" class="demo-ruleForm">
-                <el-form-item prop="username">
-                    <el-input placeholder="手机号或邮箱" v-model="loginForm.phoneOrEmail"></el-input>
-                </el-form-item>
-                <el-form-item prop="password">
-                    <el-input type="password" placeholder="密码" v-model="loginForm.password"
-                              @keyup.enter.native="handleLoginIn"></el-input>
-                </el-form-item>
-                <div class="login-btn">
-                    <el-button  @click="goSignUp()">注册</el-button>
-                    <el-button type="primary" @click="handleLoginIn">登录</el-button>
+    <div>
+        <div class="login-in">
+            <login-logo/>
+            <div class="login">
+                <div class="login-head">
+                    <span>帐号登录</span>
                 </div>
-            </el-form>
+                <el-form :model="loginForm" status-icon :rules="rules" ref="loginForm" class="demo-ruleForm">
+                    <el-form-item prop="username">
+                        <el-input placeholder="手机号或邮箱" v-model="loginForm.phoneOrEmail"></el-input>
+                    </el-form-item>
+                    <el-form-item prop="password">
+                        <el-input type="password" placeholder="密码" v-model="loginForm.password"
+                                  @keyup.enter.native="handleLoginIn"></el-input>
+                    </el-form-item>
+                    <div class="login-btn">
+                        <el-button @click="goSignUp()">注册</el-button>
+                        <el-button type="primary" @click="handleLoginIn">登录</el-button>
+                    </div>
+                </el-form>
+            </div>
+        </div>
+        <div id="ICP">
+            <el-link href="http://beian.miit.gov.cn" type="info" target="_blank" style="float: right">京ICP备20030570号</el-link>
         </div>
     </div>
 </template>
@@ -74,20 +79,20 @@
             { validator: validatePassword, message: "请输入密码", trigger: "blur" }
           ]
         },
-        userInfo:{
-          phone:"",
-          email:"",
-          userName:"",
-          birthday:"",
-          userId:"",
-          avatar:""
+        userInfo: {
+          phone: "",
+          email: "",
+          userName: "",
+          birthday: "",
+          userId: "",
+          avatar: ""
         }
       };
     },
 
     //created:在模板渲染成html前调用，即通常初始化某些属性值，然后再渲染成视图
     //mouted 在模板渲染成html后调用，通常是初始化页面完成后，再对html的dom节点进行一些需要的操作
-    created () {
+    created() {
       //清除定时器
       clearInterval(this.messageTimer);
     },
@@ -95,12 +100,12 @@
     //在methods中定义方法，让v-on指令来接收（调用）
     methods: {
 
-  handleLoginIn() {
-    let _this = this;
+      handleLoginIn() {
+        let _this = this;
 
         let userdata = {
-          "phoneOrEmail" : this.loginForm.phoneOrEmail,
-          "password" : this.loginForm.password
+          "phoneOrEmail": this.loginForm.phoneOrEmail,
+          "password": this.loginForm.password
         };
 
         loginIn(userdata)
@@ -108,12 +113,12 @@
             if (res.code === 0) {
               this.$message.success("登录成功");
               _this.setUserMsg(res);
-              setTimeout(function () {
-                _this.$router.push({path: "/backgroud"});
+              setTimeout(function() {
+                _this.$router.push({ path: "/backgroud" });
                 // _this.$router.go(0)
-              }, 1000)
+              }, 1000);
             } else {
-              this.notify("失败",res.result);
+              this.notify("失败", res.result);
             }
           })
           .catch(failResponse => {
@@ -121,7 +126,7 @@
       },
 
 
-      setUserMsg (res) {
+      setUserMsg(res) {
         //vuex Vue 的状态管理工具 可以作为公共数据缓存使用
         this.userInfo.userId = res.result.userId;
         this.userInfo.userName = res.result.name;
