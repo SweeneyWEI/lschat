@@ -137,7 +137,7 @@
 
         let messageContent;
         //如果是图片
-        if (data.messageContent.match("http")) {
+        if (data.messageContent.match(".jpg")) {
           messageContent = "<img data-src='" + data.messageContent + "'/>";
         } else {
           messageContent = data.messageContent;
@@ -197,7 +197,7 @@
                 }
                 let contentMessage;
                 //对图片的处理
-                if (content.content.match("http")) {
+                if (content.content.match(".jpg")) {
                   contentMessage = "<img data-src='" + content.content + "'/>";
                 } else {
                   contentMessage = content.content;

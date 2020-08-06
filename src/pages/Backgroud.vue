@@ -418,7 +418,7 @@
               if (res.result.length > 0) {
                 for (let i = 0; i < res.result.length; i++) {
                   let msgContent;
-                  if (res.result[i].content.match("http")) {
+                  if (res.result[i].content.match(".jpg")) {
                     msgContent = "[图片]";
                   } else {
                     msgContent = res.result[i].content;
@@ -671,8 +671,14 @@
        * 更新用户信息
        */
       updateInfo() {
+
+        if (this.updateUserInfo.updateName === "" && this.updateUserInfo.updatePhone === ""
+          && this.updateUserInfo.updateEmail === "" && this.updateUserInfo.updateBirthday === "") {
+          this.notify("提示", "信息未更新,请在左侧输入框直接修改");
+          return;
+        }
+
         let d = this.updateUserInfo.updateBirthday;
-        console.log("datetime:" + d);
         let datetime = "";
         if (d !== "") {
           datetime = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
@@ -688,6 +694,7 @@
         updateUserInfo(updateInfo)
           .then(res => {
             if (res.code === 0) {
+
               this.userInfo.userName = res.result.name;
               this.userInfo.phone = res.result.phone;
               this.userInfo.email = res.result.email;
@@ -695,6 +702,7 @@
 
               this.$store.commit("setUserInfo", this.userInfo);
               this.$message.success("用户信息已更新");
+
             } else if (res.code === 2001) {
               this.notify("登录失败", res.result);
               this.goLogin();
