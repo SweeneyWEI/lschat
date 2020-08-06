@@ -199,12 +199,13 @@
                 message: "好友申请已发送",
                 type: "success"
               });
-            } else if (res.code === 1) {
+            } else if (res.code >= 10010) {
               this.$message({
-                message: "已经是好友关系，无需重复添加",
+                message: res.result,
                 type: "success"
               });
-            } else {
+            }
+            else {
               this.notify("好友申请发送失败", res.result);
             }
           })
