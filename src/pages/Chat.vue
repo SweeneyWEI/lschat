@@ -10,7 +10,7 @@
   import { mixin } from "../mixins";
   import io from "socket.io-client";
   import { mapGetters } from "vuex";
-  import { getChatContentList, getGroupInfoList } from "../api/index";
+  import { getChatContentList, getGroupInfoList, getGroupContentList } from "../api/index";
 
   const options = {
     reconnection: true,      //当连接终止后，是否允许Socket.io自动进行重连
@@ -177,52 +177,75 @@
        * 加载聊天记录
        */
       loadChatContent() {
+
         let params = new URLSearchParams();
-        params.append("chatId", this.roomId);
-        params.append("pageIndex", this.pageIndex);
 
-        getChatContentList(params)
-          .then(res => {
-            if (res.code === 0) {
-              this.chatList=[];
-              for (let i = 0; i < res.result.length; i++) {
+        if (this.idTag === "groupId") {
+          params.append("groupId", this.roomId);
+          params.append("pageIndex", this.pageIndex);
+          getGroupContentList(params)
+            .then(res => {
+              this.initChatContent(res);
+            })
+            .catch(failResponse => {
+            });
+        }
 
-                let content = res.result[i];
-
-                let mine = false;
-                if (content.fromUser === this.userInfo.userId) {
-                  mine = true;
-                }
-                let contentMessage;
-                //对图片的处理
-                if (content.content.match(".jpg")) {
-                  contentMessage = "<img data-src='" + content.content + "'/>";
-                } else {
-                  contentMessage = content.content;
-                }
-
-                let chatContent = {
-                  "date": content.receiveTime,
-                  "text": { "text": contentMessage },
-                  "mine": mine,
-                  "name": content.fromUserName,
-                  "img": content.fromUserAvatar
-                };
-                this.chatList.push(chatContent);
-                this.pageIndex+=1;
-              }
-
-            } else if (res.code === 2001) {
-              this.notify("登录失败", res.result);
-              this.goLogin();
-            } else {
-              this.notify("服务异常");
-            }
-          })
-          .catch(failResponse => {
-          });
+        if (this.idTag === "chatId") {
+          params.append("chatId", this.roomId);
+          params.append("pageIndex", this.pageIndex);
+          getChatContentList(params)
+            .then(res => {
+              this.initChatContent(res);
+            })
+            .catch(failResponse => {
+            });
+        }
       },
-      /**/
+/**
+ * 组装聊天记录
+ */
+      initChatContent(res) {
+        if (res.code === 0) {
+          this.chatList = [];
+          for (let i = 0; i < res.result.length; i++) {
+
+            let content = res.result[i];
+
+            let mine = false;
+            if (content.fromUser === this.userInfo.userId) {
+              mine = true;
+            }
+            let contentMessage;
+            //对图片的处理
+            if (content.content.match(".jpg")) {
+              contentMessage = "<img data-src='" + content.content + "'/>";
+            } else {
+              contentMessage = content.content;
+            }
+
+            let chatContent = {
+              "date": content.receiveTime,
+              "text": { "text": contentMessage },
+              "mine": mine,
+              "name": content.fromUserName,
+              "img": content.fromUserAvatar
+            };
+            this.chatList.push(chatContent);
+            this.pageIndex += 1;
+          }
+
+        } else if (res.code === 2001) {
+          this.notify("登录失败", res.result);
+          this.goLogin();
+        } else {
+          this.notify("服务异常");
+        }
+      },
+
+/**
+ * 工具栏操作
+ */
       toolEvent(type) {
         let _this = this;
         if (type === "img") {
