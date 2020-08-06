@@ -119,7 +119,6 @@ export function post(url, data) {
   export function postWithJwt(url, data) {
     return new Promise((resolve, reject) => {
 
-      console.log(store);
         axios.post(url, data,{
           headers: {"jwt": store.state.user.jwt}
         })
@@ -140,7 +139,6 @@ export function post(url, data) {
 export function postFormData(url, data) {
   return new Promise((resolve, reject) => {
 
-    console.log(store);
     axios.post(url, data,{
       headers: {
         "jwt": store.state.user.jwt,

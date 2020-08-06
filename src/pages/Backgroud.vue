@@ -331,12 +331,10 @@
           //判断是否有未读消息
           if (this.checkMessageDot(friendId)) {
           } else {
-            console.log("判断用户有未读消息");
             let arrayList = this.messageDotUsersList;
             let messageIndex = arrayList.findIndex(userId => userId === friendId);
             arrayList.splice(messageIndex, 1);
             this.$store.commit("setMessageDotUsersList", arrayList);
-            console.log("删除");
           }
         } else {
           roomId = item.groupId;
@@ -357,7 +355,6 @@
        * 轮询好友申请
        */
       getUserApply() {
-        console.log(this.tabPage);
         let _this = this;
         scheduleFriendApply()
           .then(res => {
@@ -370,7 +367,6 @@
                   this.friendApplyList.push(res.result[i]);
                 }
                 this.$store.commit("setFriendApplys", this.friendApplyList);
-                console.log("更新applyList缓存");
               }
             } else if (res.code === 2001) {
               this.notify("登录失败", res.result);
@@ -450,7 +446,6 @@
           return true;
         }
         let find = this.messageDotUsersList.find(item => item === friendId);
-        console.log("小红点检测:" + find);
         return find === undefined;
 
       },
@@ -672,7 +667,6 @@
        */
       updateInfo() {
         let d = this.updateUserInfo.updateBirthday;
-        console.log("datetime:" + d);
         let datetime = "";
         if (d !== "") {
           datetime = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
