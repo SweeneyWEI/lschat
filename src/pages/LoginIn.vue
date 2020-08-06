@@ -82,6 +82,10 @@
       };
     },
 
+    created(){
+      //设置登录成功首页
+      this.$store.commit("setTabPage","friend");
+    },
     //在methods中定义方法，让v-on指令来接收（调用）
     methods: {
 
