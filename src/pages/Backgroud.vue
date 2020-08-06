@@ -229,6 +229,7 @@
     mixins: [mixin],
     data() {
       return {
+        messageTimer: "",
         applyTimer: "",
         messageUserList: [],
         chatObject: {
@@ -273,8 +274,7 @@
         "tabPage",
         "userList",
         "groupList",
-        "messageDotUsersList",
-        "messageTimer"
+        "messageDotUsersList"
       ])
     },
 
@@ -284,8 +284,7 @@
     },
     mounted() {
       this.applyTimer = setInterval(this.getUserApply, 3000);
-      let messageTimer = setInterval(this.scheduleMessage, 3000);
-      this.$store.commit("setMessageTimer", messageTimer);
+      this.messageTimer = setInterval(this.scheduleMessage, 3000);
     },
 
     beforeDestroy() {
@@ -435,7 +434,6 @@
               }
             } else if (res.code === 2001) {
               clearInterval(this.messageTimer);
-              this.notify("登录失败", res.result);
               _this.goLogin();
             }
           })
