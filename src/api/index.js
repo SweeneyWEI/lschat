@@ -33,6 +33,11 @@ export function getChatContentList(params) {
   return postWithJwt("lc/ri/chatContent", params);
 }
 
+//获取群聊天记录
+export function getGroupContentList(params) {
+  return postWithJwt("lc/go/groupChat/history", params);
+}
+
 //获取用户信息
 export function getUserInfo(params) {
   return postWithJwt("lc/uo/userInfo", params);
