@@ -11,7 +11,7 @@
     "core-js": "^3.6.5",
     "element-ui": "^2.13.2",
     "jwchat": "^0.2.43",
-    "qs": "^6.9.4",
+    "qs": "^6.9.7",
     "socket.io-client": "^2.3.0",
     "vue": "^2.6.11",
     "vue-notify-message": "^1.0.5",
